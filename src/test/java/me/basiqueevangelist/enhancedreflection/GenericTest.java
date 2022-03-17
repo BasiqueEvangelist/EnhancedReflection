@@ -12,7 +12,7 @@ public class GenericTest extends ExampleGenericClass<Long> {
         EClass<GenericTest> klass = EClass.fromJava(GenericTest.class);
         EClass<?> superklass = klass.superclass();
         assertTrue(superklass.isGeneric());
-        assertEquals(EClass.fromJava(Long.class), superklass.resolveTypeVariable(superklass.typeParameters().get(0)));
+        assertEquals(EClass.fromJava(Long.class), superklass.resolveTypeVariable(superklass.typeVariables().get(0)));
     }
 
     @Test

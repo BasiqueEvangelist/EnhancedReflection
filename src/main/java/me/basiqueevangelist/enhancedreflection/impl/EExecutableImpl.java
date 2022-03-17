@@ -83,7 +83,7 @@ public abstract class EExecutableImpl<T extends Executable> extends AnnotatedImp
     }
 
     @Override
-    public @Unmodifiable List<ETypeVariable> typeParameters() {
+    public @Unmodifiable List<ETypeVariable> typeVariables() {
         return typeParams.get();
     }
 

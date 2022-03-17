@@ -102,7 +102,7 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
             EClass<? super T>[] interfaces = new EClass[jInterfaces.length];
 
             for (int i = 0; i < interfaces.length; i++) {
-                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).toClass();
+                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this).toClass();
             }
 
             return List.of(interfaces);
@@ -175,7 +175,7 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
     @Override
     @SuppressWarnings("unchecked")
     public EClass<? super T> superclass() {
-        return (EClass<? super T>) EType.fromJava(raw.getGenericSuperclass()).toClass();
+        return (EClass<? super T>) EType.fromJava(raw.getGenericSuperclass()).tryResolve(this).toClass();
     }
 
     @Override
@@ -219,7 +219,7 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
     }
 
     @Override
-    public @Unmodifiable List<ETypeVariable> typeParameters() {
+    public @Unmodifiable List<ETypeVariable> typeVariables() {
         return typeParams.get();
     }
 
@@ -393,6 +393,20 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     public EType tryResolve(GenericTypeContext ctx) {
-        return this;
+        List<ETypeVariable> typeParams = typeVariables();
+        EType[] newParamValues = new EType[typeParams.size()];
+        boolean changed = false;
+        for (int i = 0; i < newParamValues.length; i++) {
+            EType newValue = typeParams.get(i).tryResolve(ctx);
+            if (newValue != typeParams.get(i)) {
+                changed = true;
+            }
+            newParamValues[i] = newValue;
+        }
+
+        if (changed)
+            return new GenericEClassImpl<>(List.of(newParamValues), raw);
+        else
+            return this;
     }
 }

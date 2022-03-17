@@ -22,7 +22,7 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
 
     @Override
     public EType resolveTypeVariable(ETypeVariable typeVar) {
-        int idx = typeParameters().indexOf(typeVar);
+        int idx = typeVariables().indexOf(typeVar);
         if (idx != -1)
             return typeParamValues.get(idx);
         else

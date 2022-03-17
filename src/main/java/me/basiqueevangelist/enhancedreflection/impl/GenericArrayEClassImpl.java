@@ -227,8 +227,8 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
-    public @Unmodifiable List<ETypeVariable> typeParameters() {
-        return arrayComponent().typeParameters();
+    public @Unmodifiable List<ETypeVariable> typeVariables() {
+        return arrayComponent().typeVariables();
     }
 
     @Override

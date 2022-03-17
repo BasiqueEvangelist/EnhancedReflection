@@ -7,6 +7,6 @@ import java.util.List;
 
 @ApiStatus.NonExtendable
 public interface GenericTypeContext {
-    @Unmodifiable List<ETypeVariable> typeParameters();
+    @Unmodifiable List<ETypeVariable> typeVariables();
     EType resolveTypeVariable(ETypeVariable typeVar);
 }
