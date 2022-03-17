@@ -11,7 +11,7 @@ public class EParameterImpl extends AnnotatedImpl<Parameter> implements EParamet
     public EParameterImpl(EExecutable parent, Parameter raw) {
         super(raw);
 
-        this.parent = parent != null ? parent : EExecutable.fromJava(raw.getDeclaringExecutable());
+        this.parent = parent;
     }
 
     @Override

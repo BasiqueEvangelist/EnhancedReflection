@@ -2,9 +2,6 @@ package me.basiqueevangelist.enhancedreflection.api;
 
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Represents an element that can contain classes.
- */
 @ApiStatus.NonExtendable
 public interface ClassContainer {
     default EClass<?> assertClass() {

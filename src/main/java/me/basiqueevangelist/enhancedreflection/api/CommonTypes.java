@@ -1,6 +1,10 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
-public class CommonTypes {
+public final class CommonTypes {
+    private CommonTypes() {
+
+    }
+
     public static final EClass<Object> OBJECT = EClass.fromJava(Object.class);
     public static final EClass<String> STRING = EClass.fromJava(String.class);
 
