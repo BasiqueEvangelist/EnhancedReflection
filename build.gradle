@@ -25,6 +25,12 @@ java {
     withSourcesJar()
 }
 
+jar {
+    from ("LICENSE") {
+        rename { "LICENSE_enhanced_reflection" }
+    }
+}
+
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
@@ -33,6 +39,33 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
+
+            pom {
+                name = "Enhanced Reflection"
+                description = "Reflection with better Generics support"
+                url = "https://github.com/BasiqueEvangelist/EnhancedReflection"
+
+                licenses {
+                    license {
+                        name = "MPL2.0"
+                        url = "https://www.mozilla.org/en-US/MPL/2.0/"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "BasiqueEvangelist"
+                        name = "BasiqueEvangelist"
+                        email = "basiqueevangelist@yandex.ru"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:https://github.com/BasiqueEvangelist/EnhancedReflection"
+                    developerConnection = "scm:git:ssh://git@github.com/BasiqueEvangelist/EnhancedReflection.git"
+                    url = "https://github.com/BasiqueEvangelist/EnhancedReflection"
+                }
+            }
         }
     }
 }
