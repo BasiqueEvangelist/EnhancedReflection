@@ -17,4 +17,6 @@ public interface EWildcard extends EType {
     @Unmodifiable List<EType> lowerBounds();
 
     WildcardType raw();
+
+    EUnboundArray arrayOf();
 }

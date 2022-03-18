@@ -4,6 +4,7 @@ import me.basiqueevangelist.enhancedreflection.api.EClass;
 import me.basiqueevangelist.enhancedreflection.api.EType;
 import me.basiqueevangelist.enhancedreflection.api.ETypeVariable;
 import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -18,6 +19,16 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
     @Override
     public boolean isGeneric() {
         return true;
+    }
+
+    @Override
+    public boolean isGenericInstance() {
+        return true;
+    }
+
+    @Override
+    public @Unmodifiable List<EType> typeVariableValues() {
+        return typeParamValues;
     }
 
     @Override

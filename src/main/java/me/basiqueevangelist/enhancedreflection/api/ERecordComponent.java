@@ -11,6 +11,7 @@ public interface ERecordComponent extends EAnnotated {
         return new ERecordComponentImpl(EClass.fromJava(component.getDeclaringRecord()), component);
     }
 
+    String name();
     EMethod accessor();
     EType componentType();
     EClass<?> declaringRecord();

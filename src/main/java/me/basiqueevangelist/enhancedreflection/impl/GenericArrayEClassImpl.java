@@ -113,7 +113,27 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
 
     @Override
     public boolean isGeneric() {
+        return false;
+    }
+
+    @Override
+    public boolean isGenericInstance() {
         return true;
+    }
+
+    @Override
+    public @Unmodifiable List<EType> typeVariableValues() {
+        return List.of();
+    }
+
+    @Override
+    public EClass<T[]> instantiateWith(List<EType> typeVarValues) {
+        throw new IllegalArgumentException("Type variable array size doesn't match!");
+    }
+
+    @Override
+    public EClass<T[]> instantiateWith(Class<?>... typeVarValues) {
+        throw new IllegalArgumentException("Type variable array size doesn't match!");
     }
 
     @Override
@@ -228,7 +248,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
 
     @Override
     public @Unmodifiable List<ETypeVariable> typeVariables() {
-        return arrayComponent().typeVariables();
+        return List.of();
     }
 
     @Override
@@ -244,5 +264,10 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
         } else {
             return this;
         }
+    }
+
+    @Override
+    public String toString() {
+        return elementType.toString() + "[]";
     }
 }

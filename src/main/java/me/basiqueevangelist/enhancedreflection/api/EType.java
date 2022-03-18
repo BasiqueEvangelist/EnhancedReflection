@@ -39,6 +39,7 @@ public interface EType {
     }
 
     EType tryResolve(GenericTypeContext ctx);
+    EType arrayOf();
 
     default EClass<?> toClass() {
         return CommonTypes.OBJECT;

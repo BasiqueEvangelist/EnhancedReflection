@@ -12,4 +12,6 @@ public interface ETypeVariable extends EType {
     @Unmodifiable List<EType> bounds();
 
     TypeVariable<?> raw();
+
+    EUnboundArray arrayOf();
 }

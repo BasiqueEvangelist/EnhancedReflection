@@ -54,6 +54,11 @@ public class EWildcardImpl implements EWildcard {
     }
 
     @Override
+    public EUnboundArray arrayOf() {
+        return new EUnboundArrayImpl(this);
+    }
+
+    @Override
     public String toString() {
         return raw.toString();
     }

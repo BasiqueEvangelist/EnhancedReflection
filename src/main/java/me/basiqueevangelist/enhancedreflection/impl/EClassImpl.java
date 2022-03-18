@@ -215,7 +215,35 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     public boolean isGeneric() {
+        return typeVariables().size() > 0;
+    }
+
+    @Override
+    public boolean isGenericInstance() {
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public @Unmodifiable List<EType> typeVariableValues() {
+        return (List<EType>)(Object) typeVariables();
+    }
+
+    @Override
+    public EClass<T> instantiateWith(List<EType> typeVarValues) {
+        if (typeVarValues.size() != typeVariables().size())
+            throw new IllegalArgumentException("Type variable array size doesn't match!");
+
+        return new GenericEClassImpl<>(List.of(typeVarValues.toArray(EType[]::new)), this.raw);
+    }
+
+    @Override
+    public EClass<T> instantiateWith(Class<?>... typeVarValues) {
+        if (typeVarValues.length != typeVariables().size())
+            throw new IllegalArgumentException("Type variable array size doesn't match!");
+
+        // A little streams can't hurt
+        return new GenericEClassImpl<>(List.of(Arrays.stream(typeVarValues).map(EClass::fromJava).toArray(EType[]::new)), this.raw);
     }
 
     @Override
@@ -373,7 +401,10 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     public String toString() {
-        return raw.getName();
+        if (type() == ClassType.ARRAY)
+            return arrayComponent().toString() + "[]";
+        else
+            return raw.getName();
     }
 
     @Override

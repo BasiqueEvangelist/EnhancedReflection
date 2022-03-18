@@ -16,6 +16,11 @@ public class ERecordComponentImpl extends AnnotatedImpl<RecordComponent> impleme
     }
 
     @Override
+    public String name() {
+        return raw.getName();
+    }
+
+    @Override
     public EMethod accessor() {
         return accessor.get();
     }
@@ -33,6 +38,11 @@ public class ERecordComponentImpl extends AnnotatedImpl<RecordComponent> impleme
     @Override
     public RecordComponent raw() {
         return raw;
+    }
+
+    @Override
+    public String toString() {
+        return componentType().toString() + " " + name();
     }
 
     @Override

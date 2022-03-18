@@ -4,6 +4,8 @@ import me.basiqueevangelist.enhancedreflection.api.EClass;
 import me.basiqueevangelist.enhancedreflection.api.EField;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GenericTest extends ExampleGenericClass<Long> {
@@ -27,5 +29,14 @@ public class GenericTest extends ExampleGenericClass<Long> {
         assertNull(testField);
         field.set(this, 20L);
         assertEquals(20L, testField);
+    }
+
+    @Test
+    public void instantiateGenerics() {
+        var klass = EClass.fromJava(Iterable.class);
+        var inst = klass.instantiateWith(Character.class);
+        var iter = inst.method("iterator").returnType().toClass();
+        var ret = iter.method("next").returnType().toClass();
+        assertEquals(EClass.fromJava(Character.class), ret);
     }
 }

@@ -21,4 +21,9 @@ public record EUnboundArrayImpl(EType componentType) implements EUnboundArray {
             return this;
         }
     }
+
+    @Override
+    public EUnboundArray arrayOf() {
+        return new EUnboundArrayImpl(this);
+    }
 }

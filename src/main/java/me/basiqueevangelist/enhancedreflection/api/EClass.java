@@ -30,6 +30,10 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     @Nullable EPackage getPackage();
 
     boolean isGeneric();
+    boolean isGenericInstance();
+    @Unmodifiable List<EType> typeVariableValues();
+    EClass<T> instantiateWith(List<EType> typeVarValues);
+    EClass<T> instantiateWith(Class<?>... typeVarValues);
 
     @Unmodifiable Collection<EField> fields();
     @Unmodifiable Collection<EField> declaredFields();
@@ -49,7 +53,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     <O> EClass<? extends O> assertSubclass(EClass<O> clazz);
 
     EClass<T[]> arrayOf();
-    EClass<?> arrayComponent();
+    @Nullable EClass<?> arrayComponent();
 
     Class<T> raw();
 

@@ -1,9 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
-import me.basiqueevangelist.enhancedreflection.api.EClass;
-import me.basiqueevangelist.enhancedreflection.api.EType;
-import me.basiqueevangelist.enhancedreflection.api.ETypeVariable;
-import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
+import me.basiqueevangelist.enhancedreflection.api.*;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.Type;
@@ -42,6 +39,11 @@ public class ETypeVariableImpl implements ETypeVariable {
     @Override
     public TypeVariable<?> raw() {
         return raw;
+    }
+
+    @Override
+    public EUnboundArray arrayOf() {
+        return new EUnboundArrayImpl(this);
     }
 
     @Override

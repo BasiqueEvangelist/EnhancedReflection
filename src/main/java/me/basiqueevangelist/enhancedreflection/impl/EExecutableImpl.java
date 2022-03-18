@@ -69,7 +69,7 @@ public abstract class EExecutableImpl<T extends Executable> extends AnnotatedImp
 
     @Override
     public EClass<?> declaringClass() {
-        return parent != null ? parent : EClass.fromJava(raw.getDeclaringClass());
+        return parent;
     }
 
     @Override
