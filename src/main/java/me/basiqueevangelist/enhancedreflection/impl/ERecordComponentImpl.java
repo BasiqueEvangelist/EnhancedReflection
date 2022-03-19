@@ -31,6 +31,11 @@ public class ERecordComponentImpl extends AnnotatedImpl<RecordComponent> impleme
     }
 
     @Override
+    public EClass<?> rawComponentType() {
+        return EClass.fromJava(raw.getType());
+    }
+
+    @Override
     public EClass<?> declaringRecord() {
         return parent;
     }

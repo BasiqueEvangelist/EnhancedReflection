@@ -112,6 +112,11 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
+    public String packageName() {
+        return "";
+    }
+
+    @Override
     public boolean isGeneric() {
         return false;
     }
@@ -234,6 +239,11 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     @Override
     public Set<EClass<? super T[]>> allInterfaces() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public @Nullable @Unmodifiable List<T[]> enumConstants() {
+        return null;
     }
 
     @Override

@@ -12,6 +12,7 @@ public interface EParameter extends EAnnotated {
     }
 
     String name();
+    EClass<?> rawParameterType();
     EType parameterType();
     boolean isVarArgs();
     EExecutable declaringExecutable();

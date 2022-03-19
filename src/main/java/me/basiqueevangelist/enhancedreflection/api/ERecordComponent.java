@@ -14,6 +14,7 @@ public interface ERecordComponent extends EAnnotated {
     String name();
     EMethod accessor();
     EType componentType();
+    EClass<?> rawComponentType();
     EClass<?> declaringRecord();
 
     RecordComponent raw();

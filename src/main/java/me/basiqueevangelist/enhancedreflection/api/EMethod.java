@@ -14,6 +14,7 @@ public interface EMethod extends EExecutable {
 
     Object invoke(Object receiver, Object... args) throws InvocationTargetException, IllegalAccessException;
     EType returnType();
+    EClass<?> rawReturnType();
 
     Method raw();
 }

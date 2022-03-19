@@ -9,13 +9,15 @@ import java.util.*;
 
 public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> {
     private final Lazy<List<ETypeVariable>> typeParams;
-    private final Lazy<Map<String, EField>> fields;
-    private final Lazy<Map<String, EField>> declaredFields;
+    private final Lazy<List<EField>> fields;
+    private final Lazy<Map<String, EField>> fieldsMap;
+    private final Lazy<Map<String, EField>> declaredFieldsMap;
     private final Lazy<List<EMethod>> methods;
     private final Lazy<List<EMethod>> declaredMethods;
     private final Lazy<List<EConstructor<T>>> constructors;
     private final Lazy<List<EClass<? super T>>> interfaces;
     private final Lazy<List<ERecordComponent>> recordComponents;
+    private final Lazy<List<T>> enumConstants;
 
     @SuppressWarnings("unchecked")
     public static <T> EClassImpl<T> fromJava(Class<T> klass) {
@@ -43,17 +45,42 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
         });
 
         this.fields = new Lazy<>(() -> {
-            Field[] jFields = raw.getFields();
-            Map<String, EField> fields = new HashMap<>();
+            List<EField> allFields = new ArrayList<>(declaredFields());
+            EClass<?> superclass = superclass();
 
-            for (Field jField : jFields) {
-                fields.put(jField.getName(), new EFieldImpl(this, jField));
-            }
+            if (superclass != null)
+                superclass().fields().forEach(x -> {
+                    for (EField allField : allFields) {
+                        if (allField.raw() == x.raw())
+                            return;
+                    }
 
-            return fields;
+                    allFields.add(x);
+                });
+
+            interfaces().forEach(y -> y.fields().forEach(x -> {
+                for (EField allField : allFields) {
+                    if (allField.raw() == x.raw())
+                        return;
+                }
+
+                allFields.add(x);
+            }));
+
+            return Collections.unmodifiableList(allFields);
         });
 
-        this.declaredFields = new Lazy<>(() -> {
+        this.fieldsMap = new Lazy<>(() -> {
+            Map<String, EField> fields = new HashMap<>();
+
+            for (EField field : fields()) {
+                fields.putIfAbsent(field.name(), field);
+            }
+
+            return Collections.unmodifiableMap(fields);
+        });
+
+        this.declaredFieldsMap = new Lazy<>(() -> {
             Field[] jFields = raw.getDeclaredFields();
             Map<String, EField> fields = new HashMap<>();
 
@@ -61,18 +88,23 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
                 fields.put(jField.getName(), new EFieldImpl(this, jField));
             }
 
-            return fields;
+            return Collections.unmodifiableMap(fields);
         });
 
         this.methods = new Lazy<>(() -> {
-            Method[] jMethods = raw.getMethods();
-            EMethod[] methods = new EMethod[jMethods.length];
+            var collector = new MethodCollector();
 
-            for (int i = 0; i < jMethods.length; i++) {
-                methods[i] = new EMethodImpl(this, jMethods[i]);
-            }
+            declaredMethods().forEach(collector::add);
 
-            return List.of(methods);
+            var superclass = superclass();
+
+            if (superclass != null)
+                superclass.methods().forEach(collector::add);
+
+            for (var iface : interfaces())
+                iface.methods().forEach(collector::add);
+
+            return Collections.unmodifiableList(collector.toList());
         });
 
         this.declaredMethods = new Lazy<>(() -> {
@@ -117,6 +149,13 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
             }
 
             return List.of(components);
+        });
+
+        this.enumConstants = new Lazy<>(() -> {
+            var arr = raw.getEnumConstants();
+
+            if (arr == null) return null;
+            else return List.of(arr);
         });
     }
 
@@ -174,8 +213,10 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     @SuppressWarnings("unchecked")
-    public EClass<? super T> superclass() {
-        return (EClass<? super T>) EType.fromJava(raw.getGenericSuperclass()).tryResolve(this).toClass();
+    public @Nullable EClass<? super T> superclass() {
+        var superclass = raw.getGenericSuperclass();
+        if (superclass == null) return null;
+        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this).toClass();
     }
 
     @Override
@@ -211,6 +252,11 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
     @Override
     public @Nullable EPackage getPackage() {
         return EPackage.fromJava(raw.getPackage());
+    }
+
+    @Override
+    public String packageName() {
+        return raw.getPackageName();
     }
 
     @Override
@@ -258,22 +304,22 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     public @Unmodifiable Collection<EField> fields() {
-        return Collections.unmodifiableCollection(fields.get().values());
+        return fields.get();
     }
 
     @Override
     public @Unmodifiable Collection<EField> declaredFields() {
-        return Collections.unmodifiableCollection(declaredFields.get().values());
+        return declaredFieldsMap.get().values();
     }
 
     @Override
     public @Nullable EField field(String name) {
-        return fields.get().get(name);
+        return fieldsMap.get().get(name);
     }
 
     @Override
     public @Nullable EField declaredField(String name) {
-        return declaredFields.get().get(name);
+        return declaredFieldsMap.get().get(name);
     }
 
     @Override
@@ -288,24 +334,37 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
 
     @Override
     public @Nullable EMethod method(String name, Class<?>... parameterTypes) {
-        try {
-            return new EMethodImpl(this, raw.getMethod(name, parameterTypes));
-        } catch (NoSuchMethodException unused) {
-            return null;
-        } catch (SecurityException se) {
-            throw new RuntimeException(se);
-        }
+        return findMethod(methods(), name, parameterTypes);
     }
 
     @Override
     public @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes) {
-        try {
-            return new EMethodImpl(this, raw.getMethod(name, parameterTypes));
-        } catch (NoSuchMethodException unused) {
-            return null;
-        } catch (SecurityException se) {
-            throw new RuntimeException(se);
+        return findMethod(declaredMethods(), name, parameterTypes);
+    }
+
+    private EMethod findMethod(List<EMethod> methods, String name, Class<?>[] parameterTypes) {
+        EMethod result = null;
+
+        outer: for (EMethod method : methods) {
+            if (!method.name().equals(name)) continue;
+            if (method.parameters().size() != parameterTypes.length) continue;
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                if (!parameterTypes[i].isAssignableFrom(method.parameters().get(i).rawParameterType().raw()))
+                    continue outer;
+            }
+
+            if (result != null) {
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    if (!result.parameters().get(i).rawParameterType().isAssignableFrom(method.parameters().get(i).rawParameterType()))
+                        continue outer;
+                }
+            }
+
+            result = method;
         }
+
+        return result;
     }
 
     @Override
@@ -385,6 +444,11 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
         Set<EClass<?>> interfaces = new HashSet<>();
         addInterfaces(interfaces);
         return (Set) interfaces;
+    }
+
+    @Override
+    public @Nullable @Unmodifiable List<T> enumConstants() {
+        return enumConstants.get();
     }
 
     @Override

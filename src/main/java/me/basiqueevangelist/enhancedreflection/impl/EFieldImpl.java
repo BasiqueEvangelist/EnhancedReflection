@@ -28,6 +28,11 @@ public record EFieldImpl(EClassImpl<?> parent,
     }
 
     @Override
+    public EClass<?> rawFieldType() {
+        return EClass.fromJava(raw.getType());
+    }
+
+    @Override
     public Object get(Object receiver) throws IllegalAccessException {
         return raw.get(receiver);
     }

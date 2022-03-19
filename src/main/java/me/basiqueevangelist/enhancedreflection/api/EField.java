@@ -16,6 +16,7 @@ public interface EField extends ModifierHolder {
     String name();
     int modifiers();
     EType fieldType();
+    EClass<?> rawFieldType();
     Object get(Object receiver) throws IllegalAccessException;
     void set(Object receiver, Object to) throws IllegalAccessException;
 

@@ -20,7 +20,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     ClassType type();
     ClassScope scope();
     @Nullable ClassContainer enclosedIn();
-    EClass<? super T> superclass();
+    @Nullable EClass<? super T> superclass();
     @Unmodifiable List<EClass<? super T>> interfaces();
     boolean isInstance(Object obj);
     boolean isAssignableFrom(EClass<?> klass);
@@ -28,6 +28,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     String name();
     String simpleName();
     @Nullable EPackage getPackage();
+    String packageName();
 
     boolean isGeneric();
     boolean isGenericInstance();
@@ -62,6 +63,8 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
 
     Set<EClass<? super T>> allSuperclasses();
     Set<EClass<? super T>> allInterfaces();
+
+    @Nullable @Unmodifiable List<T> enumConstants();
 
     ClassLoader classLoader();
 

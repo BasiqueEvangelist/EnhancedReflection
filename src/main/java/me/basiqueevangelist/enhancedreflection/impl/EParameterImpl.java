@@ -20,6 +20,11 @@ public class EParameterImpl extends AnnotatedImpl<Parameter> implements EParamet
     }
 
     @Override
+    public EClass<?> rawParameterType() {
+        return EClass.fromJava(raw.getType());
+    }
+
+    @Override
     public EType parameterType() {
         return EType.fromJava(raw.getParameterizedType()).tryResolve(parent);
     }

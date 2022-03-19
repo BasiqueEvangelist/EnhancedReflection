@@ -21,6 +21,11 @@ public class EMethodImpl extends EExecutableImpl<Method> implements EMethod {
     }
 
     @Override
+    public EClass<?> rawReturnType() {
+        return EClass.fromJava(raw.getReturnType());
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(returnType()).append(" ").append(name()).append("(");
