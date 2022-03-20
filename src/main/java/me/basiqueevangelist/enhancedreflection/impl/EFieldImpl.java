@@ -3,9 +3,17 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
-public record EFieldImpl(EClassImpl<?> parent,
-                         Field raw) implements EField {
+public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
+    private final EClassImpl<?> parent;
+
+    public EFieldImpl(EClassImpl<?> parent,
+                      Field raw) {
+        super(raw);
+
+        this.parent = parent;
+    }
 
     @Override
     public EClass<?> declaringClass() {
@@ -46,4 +54,24 @@ public record EFieldImpl(EClassImpl<?> parent,
     public Field raw() {
         return raw;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (EFieldImpl) obj;
+        return Objects.equals(this.parent, that.parent) &&
+            Objects.equals(this.raw, that.raw);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parent, raw);
+    }
+
+    @Override
+    public String toString() {
+        return fieldType() + " " + name();
+    }
+
 }

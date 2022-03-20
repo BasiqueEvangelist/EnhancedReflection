@@ -3,7 +3,7 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.EPackage;
 import org.jetbrains.annotations.Nullable;
 
-public class EPackageImpl extends AnnotatedImpl<Package> implements EPackage {
+public class EPackageImpl extends EAnnotatedImpl<Package> implements EPackage {
     public EPackageImpl(Package raw) {
         super(raw);
     }

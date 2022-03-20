@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class EExecutableImpl<T extends Executable> extends AnnotatedImpl<T> implements EExecutable {
+public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedImpl<T> implements EExecutable {
     protected final EClass<?> parent;
     private final Lazy<List<EClass<?>>> exceptionTypes;
     private final Lazy<List<EParameter>> parameters;

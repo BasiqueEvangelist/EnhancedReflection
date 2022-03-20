@@ -19,7 +19,8 @@ public class MethodTest {
         assertTrue(TestClass.methodRan);
     }
 
-    @Test void invokeConstructor() throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    @Test
+    public void invokeConstructor() throws InvocationTargetException, InstantiationException, IllegalAccessException {
         var klass = EClass.fromJava(TestClass.class);
         var ctor = klass.constructor(int.class);
         assertNotNull(ctor);

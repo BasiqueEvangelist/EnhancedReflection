@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> {
+public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T> {
     private final Lazy<List<ETypeVariable>> typeParams;
     private final Lazy<List<EField>> fields;
     private final Lazy<Map<String, EField>> fieldsMap;
@@ -47,6 +47,8 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
         this.fields = new Lazy<>(() -> {
             List<EField> allFields = new ArrayList<>(declaredFields());
             EClass<?> superclass = superclass();
+
+            allFields.removeIf(x -> !x.isPublic());
 
             if (superclass != null)
                 superclass().fields().forEach(x -> {

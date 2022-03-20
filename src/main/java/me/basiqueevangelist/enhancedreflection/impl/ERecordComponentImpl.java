@@ -4,7 +4,7 @@ import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.RecordComponent;
 
-public class ERecordComponentImpl extends AnnotatedImpl<RecordComponent> implements ERecordComponent {
+public class ERecordComponentImpl extends EAnnotatedImpl<RecordComponent> implements ERecordComponent {
     private final EClass<?> parent;
     private final Lazy<EMethod> accessor;
 

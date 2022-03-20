@@ -5,7 +5,7 @@ import me.basiqueevangelist.enhancedreflection.api.*;
 import java.lang.reflect.Parameter;
 import java.util.Objects;
 
-public class EParameterImpl extends AnnotatedImpl<Parameter> implements EParameter {
+public class EParameterImpl extends EAnnotatedImpl<Parameter> implements EParameter {
     private final EExecutable parent;
 
     public EParameterImpl(EExecutable parent, Parameter raw) {

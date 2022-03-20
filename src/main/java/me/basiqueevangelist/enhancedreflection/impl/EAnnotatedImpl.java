@@ -8,12 +8,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
-public abstract class AnnotatedImpl<T extends AnnotatedElement> implements EAnnotated {
+public abstract class EAnnotatedImpl<T extends AnnotatedElement> implements EAnnotated {
     protected final T raw;
     private final Lazy<List<Annotation>> annotations;
     private final Lazy<List<Annotation>> declaredAnnotations;
 
-    public AnnotatedImpl(T raw) {
+    public EAnnotatedImpl(T raw) {
         this.raw = raw;
 
         this.annotations = new Lazy<>(() -> List.of(raw.getAnnotations()));
