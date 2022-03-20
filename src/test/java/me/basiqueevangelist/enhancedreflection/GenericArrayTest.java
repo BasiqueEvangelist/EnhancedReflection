@@ -21,11 +21,11 @@ public class GenericArrayTest {
     public void getArr() {
         var klass = EClass.fromJava(GenericArrayTest.class);
         var method = klass.method("getMethod", ArrayClass.class);
-        var arrClass = method.parameters().get(0).parameterType().toClass();
+        var arrClass = method.parameters().get(0).parameterType().upperBound();
         var field = arrClass.field("array");
         var type = field.fieldType();
         assertInstanceOf(EClass.class, type);
-        assertEquals(ClassType.ARRAY, type.toClass().type());
-        assertEquals(EClass.fromJava(String.class), type.toClass().arrayComponent());
+        assertEquals(ClassType.ARRAY, type.upperBound().type());
+        assertEquals(EClass.fromJava(String.class), type.upperBound().arrayComponent());
     }
 }

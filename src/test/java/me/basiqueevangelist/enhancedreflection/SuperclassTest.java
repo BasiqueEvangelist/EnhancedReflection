@@ -16,12 +16,12 @@ public class SuperclassTest<T> extends BasedClass<T> implements Iterable<T> {
     public void readInterfaces() {
         var klass = EClass.fromJava(SuperclassTest.class);
         var based = klass.method("based", SuperclassTest.class);
-        var klass2 = based.parameters().get(0).parameterType().toClass();
+        var klass2 = based.parameters().get(0).parameterType().upperBound();
         var iface = klass2.interfaces().get(0);
         var iteratorMethod = iface.method("iterator");
-        var iteratorType = iteratorMethod.returnType().toClass();
+        var iteratorType = iteratorMethod.returnType().upperBound();
         var nextMethod = iteratorType.method("next");
-        Assertions.assertEquals(String.class, nextMethod.returnType().toClass().raw());
+        Assertions.assertEquals(String.class, nextMethod.returnType().upperBound().raw());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -29,10 +29,10 @@ public class SuperclassTest<T> extends BasedClass<T> implements Iterable<T> {
     public void readSuperclass() {
         var klass = EClass.fromJava(SuperclassTest.class);
         var based = klass.method("based", SuperclassTest.class);
-        var klass2 = based.parameters().get(0).parameterType().toClass();
+        var klass2 = based.parameters().get(0).parameterType().upperBound();
         var superklass = klass2.superclass();
         var field = superklass.field("thing");
-        Assertions.assertEquals(String.class, field.fieldType().toClass().raw());
+        Assertions.assertEquals(String.class, field.fieldType().upperBound().raw());
     }
 
     @Override

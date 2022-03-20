@@ -134,7 +134,7 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
             EClass<? super T>[] interfaces = new EClass[jInterfaces.length];
 
             for (int i = 0; i < interfaces.length; i++) {
-                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this).toClass();
+                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this).upperBound();
             }
 
             return List.of(interfaces);
@@ -216,7 +216,7 @@ public class EClassImpl<T> extends AnnotatedImpl<Class<T>> implements EClass<T> 
     public @Nullable EClass<? super T> superclass() {
         var superclass = raw.getGenericSuperclass();
         if (superclass == null) return null;
-        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this).toClass();
+        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this).upperBound();
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 @ApiStatus.NonExtendable
-public interface EExecutable extends GenericTypeContext, ModifierHolder, ClassContainer {
+public interface EExecutable extends GenericTypeContext, ModifierHolder, ClassContainer, EAnnotated {
     static EExecutable fromJava(Executable executable) {
         if (executable instanceof Method m)
             return EMethod.fromJava(m);

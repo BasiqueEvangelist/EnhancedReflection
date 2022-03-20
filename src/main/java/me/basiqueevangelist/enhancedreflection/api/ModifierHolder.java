@@ -21,7 +21,7 @@ public interface ModifierHolder {
     }
 
     default boolean isStatic() {
-        return Modifier.isPublic(modifiers());
+        return Modifier.isStatic(modifiers());
     }
 
     default boolean isFinal() {
@@ -29,7 +29,7 @@ public interface ModifierHolder {
     }
 
     default boolean isSynchronized() {
-        return Modifier.isStatic(modifiers());
+        return Modifier.isSynchronized(modifiers());
     }
 
     default boolean isVolatile() {

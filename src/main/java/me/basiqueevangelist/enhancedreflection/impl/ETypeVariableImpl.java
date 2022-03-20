@@ -9,21 +9,22 @@ import java.util.List;
 
 public class ETypeVariableImpl implements ETypeVariable {
     private final TypeVariable<?> raw;
-    private final Lazy<List<EType>> bounds;
+    private List<EType> bounds;
+
+    public ETypeVariableImpl(TypeVariable<?> raw, List<EType> bounds) {
+        this.raw = raw;
+        this.bounds = bounds;
+    }
 
     public ETypeVariableImpl(TypeVariable<?> raw) {
         this.raw = raw;
+        this.bounds = null;
+    }
 
-        this.bounds = new Lazy<>(() -> {
-            Type[] jBounds = raw.getBounds();
-            EType[] bounds = new EType[jBounds.length];
+    public void setBounds(List<EType> bounds) {
+        if (this.bounds != null) throw new IllegalStateException("Bounds have already been set!");
 
-            for (int i = 0; i < bounds.length; i++) {
-                bounds[i] = EType.fromJava(jBounds[i]);
-            }
-
-            return List.of(bounds);
-        });
+        this.bounds = bounds;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ETypeVariableImpl implements ETypeVariable {
 
     @Override
     public @Unmodifiable List<EType> bounds() {
-        return bounds.get();
+        return bounds;
     }
 
     @Override
@@ -63,15 +64,28 @@ public class ETypeVariableImpl implements ETypeVariable {
 
     @Override
     public EType tryResolve(GenericTypeContext ctx) {
-        return ctx.resolveTypeVariable(this);
+        EType newType = ctx.resolveTypeVariable(this);
+
+        if (newType != this) return newType;
+
+        boolean changed = false;
+        EType[] newBounds = new EType[bounds.size()];
+        for (int i = 0; i < bounds.size(); i++) {
+            newBounds[i] = bounds.get(i).tryResolve(ctx);
+
+            if (newBounds[i] != bounds.get(i)) changed = true;
+        }
+
+        if (changed) return new ETypeVariableImpl(raw, List.of(newBounds));
+        else return this;
     }
 
     @Override
-    public EClass<?> toClass() {
+    public EClass<?> upperBound() {
         if (bounds().size() > 0)
-            return bounds().get(0).toClass();
+            return bounds().get(0).lowerBound();
         else
-            return ETypeVariable.super.toClass();
+            return CommonTypes.OBJECT;
     }
 
     @Override

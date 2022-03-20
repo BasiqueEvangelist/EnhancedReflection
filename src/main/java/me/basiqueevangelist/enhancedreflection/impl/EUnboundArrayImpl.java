@@ -17,6 +17,8 @@ public record EUnboundArrayImpl(EType componentType) implements EUnboundArray {
 
         if (newType instanceof EClass<?> klass) {
             return new GenericArrayEClassImpl<>(klass);
+        } else if (newType != componentType) {
+            return new EUnboundArrayImpl(newType);
         } else {
             return this;
         }

@@ -20,7 +20,7 @@ public class GenericRecognitionTest {
         var method = klass.method("based", Function.class);
         assertNotNull(method);
         var param = method.parameters().get(0);
-        var pType = param.parameterType().toClass();
+        var pType = param.parameterType().upperBound();
         var method2 = pType.methods().stream().filter(ModifierHolder::isAbstract).findAny().get();
         assertEquals("java.lang.Integer arg0", method2.parameters().get(0).toString());
     }

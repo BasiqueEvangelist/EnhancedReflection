@@ -58,8 +58,8 @@ public class GenericTest extends ExampleGenericClass<Long> {
     public void instantiateGenerics() {
         var klass = EClass.fromJava(Iterable.class);
         var inst = klass.instantiateWith(Character.class);
-        var iter = inst.method("iterator").returnType().toClass();
-        var ret = iter.method("next").returnType().toClass();
+        var iter = inst.method("iterator").returnType().upperBound();
+        var ret = iter.method("next").returnType().upperBound();
         assertEquals(EClass.fromJava(Character.class), ret);
     }
 }

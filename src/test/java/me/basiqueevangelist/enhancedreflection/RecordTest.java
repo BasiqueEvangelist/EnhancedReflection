@@ -19,7 +19,7 @@ public class RecordTest {
     @Test
     public void readRecord() {
         var klass = EClass.fromJava(RecordTest.class);
-        var record = klass.method("based", ExampleRecord.class).parameters().get(0).parameterType().toClass();
+        var record = klass.method("based", ExampleRecord.class).parameters().get(0).parameterType().upperBound();
         assertEquals(ClassType.RECORD, record.type());
         assertEquals(3, record.recordComponents().size());
         var component1 = record.recordComponents().get(0);

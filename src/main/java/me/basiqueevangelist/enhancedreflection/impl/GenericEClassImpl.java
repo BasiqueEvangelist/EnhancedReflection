@@ -9,10 +9,21 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 
 public class GenericEClassImpl<T> extends EClassImpl<T> {
-    private final List<EType> typeParamValues;
+    private List<EType> typeParamValues;
 
     public GenericEClassImpl(List<EType> typeParamValues, Class<T> klass) {
         super(klass);
+        this.typeParamValues = typeParamValues;
+    }
+
+    public GenericEClassImpl(Class<T> klass) {
+        super(klass);
+        this.typeParamValues = null;
+    }
+
+    public void setTypeParamValues(List<EType> typeParamValues) {
+        if (this.typeParamValues != null) throw new IllegalStateException("Type param values have already been set!");
+
         this.typeParamValues = typeParamValues;
     }
 

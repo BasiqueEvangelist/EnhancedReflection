@@ -8,49 +8,39 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 
 public class EWildcardImpl implements EWildcard {
-    private final WildcardType raw;
-    private final Lazy<List<EType>> lowerBounds;
-    private final Lazy<List<EType>> upperBounds;
+    private List<EType> lowerBounds;
+    private List<EType> upperBounds;
 
-    public EWildcardImpl(WildcardType raw) {
-        this.raw = raw;
+    public EWildcardImpl(List<EType> lowerBounds, List<EType> upperBounds) {
+        this.lowerBounds = lowerBounds;
+        this.upperBounds = upperBounds;
+    }
 
-        this.lowerBounds = new Lazy<>(() -> {
-            Type[] jTypes = raw.getLowerBounds();
-            EType[] types = new EType[jTypes.length];
+    public EWildcardImpl() {
+        this.lowerBounds = null;
+        this.upperBounds = null;
+    }
 
-            for (int i = 0; i < types.length; i++) {
-                types[i] = EType.fromJava(jTypes[i]);
-            }
+    public void setLowerBounds(List<EType> lowerBounds) {
+        if (this.lowerBounds != null) throw new IllegalStateException("Lower bounds have already been set!");
 
-            return List.of(types);
-        });
+        this.lowerBounds = lowerBounds;
+    }
 
-        this.upperBounds = new Lazy<>(() -> {
-            Type[] jTypes = raw.getUpperBounds();
-            EType[] types = new EType[jTypes.length];
+    public void setUpperBounds(List<EType> upperBounds) {
+        if (this.upperBounds != null) throw new IllegalStateException("Upper bounds have already been set!");
 
-            for (int i = 0; i < types.length; i++) {
-                types[i] = EType.fromJava(jTypes[i]);
-            }
-
-            return List.of(types);
-        });
+        this.upperBounds = upperBounds;
     }
 
     @Override
     public @Unmodifiable List<EType> upperBounds() {
-        return upperBounds.get();
+        return upperBounds;
     }
 
     @Override
     public @Unmodifiable List<EType> lowerBounds() {
-        return lowerBounds.get();
-    }
-
-    @Override
-    public WildcardType raw() {
-        return raw;
+        return lowerBounds;
     }
 
     @Override
@@ -60,18 +50,71 @@ public class EWildcardImpl implements EWildcard {
 
     @Override
     public String toString() {
-        return raw.toString();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("?");
+
+        if (lowerBounds.size() > 0) {
+            sb.append(" super ");
+
+            for (int i = 0; i < lowerBounds.size(); i++) {
+                if (i > 0) sb.append(" & ");
+
+                sb.append(lowerBounds.get(i));
+            }
+        } else if (upperBounds.size() > 0 && !upperBounds.get(0).equals(CommonTypes.OBJECT)) {
+            sb.append(" extends ");
+
+            for (int i = 0; i < upperBounds.size(); i++) {
+                if (i > 0) sb.append(" & ");
+
+                sb.append(upperBounds.get(i));
+            }
+        }
+
+        return sb.toString();
     }
 
     @Override
     public EType tryResolve(GenericTypeContext ctx) {
-        return this;
+        EType[] upperBounds = new EType[upperBounds().size()];
+        EType[] lowerBounds = new EType[lowerBounds().size()];
+        boolean changed = false;
+
+        for (int i = 0; i < upperBounds().size(); i++) {
+            EType oldType = upperBounds().get(i);
+            EType newType = upperBounds[i] = oldType.tryResolve(ctx);
+
+            if (oldType != newType)
+                changed = true;
+        }
+
+        for (int i = 0; i < lowerBounds().size(); i++) {
+            EType oldType = lowerBounds().get(i);
+            EType newType = lowerBounds[i] = oldType.tryResolve(ctx);
+
+            if (oldType != newType)
+                changed = true;
+        }
+
+        if (changed)
+            return new EWildcardImpl(List.of(lowerBounds), List.of(upperBounds));
+        else
+            return this;
     }
 
     @Override
-    public EClass<?> toClass() {
+    public EClass<?> upperBound() {
         if (upperBounds().size() > 0)
-            return upperBounds().get(0).toClass();
+            return upperBounds().get(0).lowerBound();
+        else
+            return CommonTypes.OBJECT;
+    }
+
+    @Override
+    public EClass<?> lowerBound() {
+        if (lowerBounds().size() > 0)
+            return lowerBounds().get(0).upperBound();
         else
             return CommonTypes.OBJECT;
     }
@@ -83,11 +126,14 @@ public class EWildcardImpl implements EWildcard {
 
         EWildcardImpl eWildcard = (EWildcardImpl) o;
 
-        return raw.equals(eWildcard.raw);
+        if (!lowerBounds.equals(eWildcard.lowerBounds)) return false;
+        return upperBounds.equals(eWildcard.upperBounds);
     }
 
     @Override
     public int hashCode() {
-        return raw.hashCode();
+        int result = lowerBounds.hashCode();
+        result = 31 * result + upperBounds.hashCode();
+        return result;
     }
 }

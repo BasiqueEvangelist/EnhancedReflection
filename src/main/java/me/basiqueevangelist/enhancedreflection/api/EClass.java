@@ -76,7 +76,12 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     }
 
     @Override
-    default EClass<?> toClass() {
+    default EClass<?> upperBound() {
+        return this;
+    }
+
+    @Override
+    default EClass<?> lowerBound() {
         return this;
     }
 }
