@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 @ApiStatus.NonExtendable
-public interface EExecutable extends GenericTypeContext, ModifierHolder, ClassContainer, EAnnotated {
+public interface EExecutable extends EMember, GenericTypeContext, ClassContainer {
     static EExecutable fromJava(Executable executable) {
         if (executable instanceof Method m)
             return EMethod.fromJava(m);
@@ -19,9 +19,7 @@ public interface EExecutable extends GenericTypeContext, ModifierHolder, ClassCo
             throw new IllegalStateException("Unknown Executable subclass " + executable.getClass().getName());
     }
 
-    String name();
     boolean isVarArgs();
-    EClass<?> declaringClass();
     @Unmodifiable List<EClass<?>> exceptionTypes();
     @Unmodifiable List<EParameter> parameters();
 

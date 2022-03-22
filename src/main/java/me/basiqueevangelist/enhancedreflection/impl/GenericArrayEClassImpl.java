@@ -93,6 +93,8 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
 
     @Override
     public boolean isAssignableFrom(Class<?> klass) {
+        if (!klass.isArray()) return false;
+
         return elementType.lowerBound().isAssignableFrom(klass.componentType());
     }
 

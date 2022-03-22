@@ -73,5 +73,4 @@ public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
     public String toString() {
         return fieldType() + " " + name();
     }
-
 }

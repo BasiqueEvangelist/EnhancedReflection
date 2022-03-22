@@ -7,14 +7,11 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.reflect.Field;
 
 @ApiStatus.NonExtendable
-public interface EField extends ModifierHolder, EAnnotated {
+public interface EField extends EMember {
     static EField fromJava(Field field) {
         return new EFieldImpl((EClassImpl<?>) EClass.fromJava(field.getDeclaringClass()), field);
     }
 
-    EClass<?> declaringClass();
-    String name();
-    int modifiers();
     EType fieldType();
     EClass<?> rawFieldType();
     Object get(Object receiver) throws IllegalAccessException;
