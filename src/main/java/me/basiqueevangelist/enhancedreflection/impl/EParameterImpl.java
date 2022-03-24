@@ -3,6 +3,7 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.Parameter;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class EParameterImpl extends EAnnotatedImpl<Parameter> implements EParameter {
@@ -26,7 +27,7 @@ public class EParameterImpl extends EAnnotatedImpl<Parameter> implements EParame
 
     @Override
     public EType parameterType() {
-        return EType.fromJava(raw.getParameterizedType()).tryResolve(parent);
+        return EType.fromJava(raw.getParameterizedType()).tryResolve(parent, new HashSet<>());
     }
 
     @Override

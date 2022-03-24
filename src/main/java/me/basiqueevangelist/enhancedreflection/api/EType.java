@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.*;
 import java.util.List;
+import java.util.Set;
 
 @ApiStatus.NonExtendable
 public interface EType {
@@ -12,7 +13,7 @@ public interface EType {
         return TypeConverter.fromJava(type);
     }
 
-    EType tryResolve(GenericTypeContext ctx);
+    EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes);
     EType arrayOf();
 
     default EClass<?> upperBound() {

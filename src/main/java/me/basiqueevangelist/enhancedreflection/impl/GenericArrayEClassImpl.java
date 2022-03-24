@@ -269,8 +269,8 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
-        EType newType = elementType.tryResolve(ctx);
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+        EType newType = elementType.tryResolve(ctx, encounteredTypes);
         if (newType != elementType) {
             return new GenericArrayEClassImpl<>((EClass<?>) newType);
         } else {

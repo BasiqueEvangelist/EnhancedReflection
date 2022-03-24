@@ -3,6 +3,7 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Objects;
 
 public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
@@ -32,7 +33,7 @@ public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
 
     @Override
     public EType fieldType() {
-        return EType.fromJava(raw.getGenericType()).tryResolve(parent);
+        return EType.fromJava(raw.getGenericType()).tryResolve(parent, new HashSet<>());
     }
 
     @Override

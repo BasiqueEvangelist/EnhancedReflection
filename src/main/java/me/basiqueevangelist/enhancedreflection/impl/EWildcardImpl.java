@@ -3,9 +3,8 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.util.List;
+import java.util.Set;
 
 public class EWildcardImpl implements EWildcard {
     private List<EType> lowerBounds;
@@ -76,14 +75,17 @@ public class EWildcardImpl implements EWildcard {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+        if (!encounteredTypes.add(this))
+            return this;
+
         EType[] upperBounds = new EType[upperBounds().size()];
         EType[] lowerBounds = new EType[lowerBounds().size()];
         boolean changed = false;
 
         for (int i = 0; i < upperBounds().size(); i++) {
             EType oldType = upperBounds().get(i);
-            EType newType = upperBounds[i] = oldType.tryResolve(ctx);
+            EType newType = upperBounds[i] = oldType.tryResolve(ctx, encounteredTypes);
 
             if (oldType != newType)
                 changed = true;
@@ -91,16 +93,20 @@ public class EWildcardImpl implements EWildcard {
 
         for (int i = 0; i < lowerBounds().size(); i++) {
             EType oldType = lowerBounds().get(i);
-            EType newType = lowerBounds[i] = oldType.tryResolve(ctx);
+            EType newType = lowerBounds[i] = oldType.tryResolve(ctx, encounteredTypes);
 
             if (oldType != newType)
                 changed = true;
         }
 
-        if (changed)
-            return new EWildcardImpl(List.of(lowerBounds), List.of(upperBounds));
-        else
-            return this;
+        try {
+            if (changed)
+                return new EWildcardImpl(List.of(lowerBounds), List.of(upperBounds));
+            else
+                return this;
+        } finally {
+            encounteredTypes.remove(this);
+        }
     }
 
     @Override

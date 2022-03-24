@@ -3,6 +3,7 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.RecordComponent;
+import java.util.HashSet;
 
 public class ERecordComponentImpl extends EAnnotatedImpl<RecordComponent> implements ERecordComponent {
     private final EClass<?> parent;
@@ -27,7 +28,7 @@ public class ERecordComponentImpl extends EAnnotatedImpl<RecordComponent> implem
 
     @Override
     public EType componentType() {
-        return EType.fromJava(raw.getGenericType()).tryResolve(parent);
+        return EType.fromJava(raw.getGenericType()).tryResolve(parent, new HashSet<>());
     }
 
     @Override

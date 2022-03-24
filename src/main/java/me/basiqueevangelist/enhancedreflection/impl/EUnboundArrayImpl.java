@@ -5,6 +5,8 @@ import me.basiqueevangelist.enhancedreflection.api.EType;
 import me.basiqueevangelist.enhancedreflection.api.EUnboundArray;
 import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
 
+import java.util.Set;
+
 public record EUnboundArrayImpl(EType componentType) implements EUnboundArray {
     @Override
     public String toString() {
@@ -12,8 +14,8 @@ public record EUnboundArrayImpl(EType componentType) implements EUnboundArray {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
-        EType newType = componentType.tryResolve(ctx);
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+        EType newType = componentType.tryResolve(ctx, encounteredTypes);
 
         if (newType instanceof EClass<?> klass) {
             return new GenericArrayEClassImpl<>(klass);

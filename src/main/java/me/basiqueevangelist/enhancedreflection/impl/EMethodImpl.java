@@ -4,6 +4,7 @@ import me.basiqueevangelist.enhancedreflection.api.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
 public class EMethodImpl extends EExecutableImpl<Method> implements EMethod {
     public EMethodImpl(EClass<?> parent, Method method) {
@@ -17,7 +18,7 @@ public class EMethodImpl extends EExecutableImpl<Method> implements EMethod {
 
     @Override
     public EType returnType() {
-        return EType.fromJava(raw.getGenericReturnType()).tryResolve(parent);
+        return EType.fromJava(raw.getGenericReturnType()).tryResolve(parent, new HashSet<>());
     }
 
     @Override

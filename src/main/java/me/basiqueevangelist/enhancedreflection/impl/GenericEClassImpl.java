@@ -7,6 +7,7 @@ import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.Set;
 
 public class GenericEClassImpl<T> extends EClassImpl<T> {
     private List<EType> typeParamValues;
@@ -52,21 +53,28 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+        if (!encounteredTypes.add(this))
+            return this;
+
         EType[] newParamValues = new EType[typeParamValues.size()];
         boolean changed = false;
         for (int i = 0; i < typeParamValues.size(); i++) {
-            EType newValue = typeParamValues.get(i).tryResolve(ctx);
+            EType newValue = typeParamValues.get(i).tryResolve(ctx, encounteredTypes);
             if (newValue != typeParamValues.get(i)) {
                 changed = true;
             }
             newParamValues[i] = newValue;
         }
 
-        if (changed)
-            return new GenericEClassImpl<>(List.of(newParamValues), raw);
-        else
-            return this;
+        try {
+            if (changed)
+                return new GenericEClassImpl<>(List.of(newParamValues), raw);
+            else
+                return this;
+        } finally {
+            encounteredTypes.remove(this);
+        }
     }
 
     @Override

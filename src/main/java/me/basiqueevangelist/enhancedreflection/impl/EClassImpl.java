@@ -136,7 +136,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
             EClass<? super T>[] interfaces = new EClass[jInterfaces.length];
 
             for (int i = 0; i < interfaces.length; i++) {
-                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this).upperBound();
+                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this, new HashSet<>()).upperBound();
             }
 
             return List.of(interfaces);
@@ -218,7 +218,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     public @Nullable EClass<? super T> superclass() {
         var superclass = raw.getGenericSuperclass();
         if (superclass == null) return null;
-        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this).upperBound();
+        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this, new HashSet<>()).upperBound();
     }
 
     @Override
@@ -489,21 +489,28 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+        if (!encounteredTypes.add(this))
+            return this;
+
         List<ETypeVariable> typeParams = typeVariables();
         EType[] newParamValues = new EType[typeParams.size()];
         boolean changed = false;
         for (int i = 0; i < newParamValues.length; i++) {
-            EType newValue = typeParams.get(i).tryResolve(ctx);
+            EType newValue = typeParams.get(i).tryResolve(ctx, encounteredTypes);
             if (newValue != typeParams.get(i)) {
                 changed = true;
             }
             newParamValues[i] = newValue;
         }
 
-        if (changed)
-            return new GenericEClassImpl<>(List.of(newParamValues), raw);
-        else
-            return this;
+        try {
+            if (changed)
+                return new GenericEClassImpl<>(List.of(newParamValues), raw);
+            else
+                return this;
+        } finally {
+            encounteredTypes.remove(this);
+        }
     }
 }

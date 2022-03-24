@@ -3,9 +3,9 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import me.basiqueevangelist.enhancedreflection.api.*;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.List;
+import java.util.Set;
 
 public class ETypeVariableImpl implements ETypeVariable {
     private final TypeVariable<?> raw;
@@ -63,21 +63,28 @@ public class ETypeVariableImpl implements ETypeVariable {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx) {
+    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
         EType newType = ctx.resolveTypeVariable(this);
 
         if (newType != this) return newType;
 
+        if (!encounteredTypes.add(this))
+            return this;
+
         boolean changed = false;
         EType[] newBounds = new EType[bounds.size()];
         for (int i = 0; i < bounds.size(); i++) {
-            newBounds[i] = bounds.get(i).tryResolve(ctx);
+            newBounds[i] = bounds.get(i).tryResolve(ctx, encounteredTypes);
 
             if (newBounds[i] != bounds.get(i)) changed = true;
         }
 
-        if (changed) return new ETypeVariableImpl(raw, List.of(newBounds));
-        else return this;
+        try {
+            if (changed) return new ETypeVariableImpl(raw, List.of(newBounds));
+            else return this;
+        } finally {
+            encounteredTypes.remove(this);
+        }
     }
 
     @Override
