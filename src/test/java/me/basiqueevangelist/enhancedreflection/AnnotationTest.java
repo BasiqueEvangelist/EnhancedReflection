@@ -4,15 +4,10 @@ import me.basiqueevangelist.enhancedreflection.api.EClass;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Iterator;
 
-@AnnotationTest.TestAnnotation(10)
-public class AnnotationTest {
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface TestAnnotation {
-        int value();
-    }
+@TestAnnotation(10)
+public class AnnotationTest implements @TestAnnotation(20) Iterable<@TestAnnotation(30) Long> {
 
     @Test
     public void getAnnotation() {
@@ -20,5 +15,22 @@ public class AnnotationTest {
         Assertions.assertTrue(klass.hasAnnotation(TestAnnotation.class));
         TestAnnotation annotation = klass.annotation(TestAnnotation.class);
         Assertions.assertEquals(10, annotation.value());
+    }
+
+    @Test
+    public void typeUseInInterface() {
+        var klass = EClass.fromJava(AnnotationTest.class);
+        var superclass = klass.interfaceUses().get(0);
+        Assertions.assertTrue(superclass.hasAnnotation(TestAnnotation.class));
+        Assertions.assertEquals(20, superclass.annotation(TestAnnotation.class).value());
+
+        var typeValue = superclass.typeVariableValues().get(0);
+        Assertions.assertTrue(typeValue.hasAnnotation(TestAnnotation.class));
+        Assertions.assertEquals(30, typeValue.annotation(TestAnnotation.class).value());
+    }
+
+    @Override
+    public Iterator<@TestAnnotation(20) Long> iterator() {
+        throw new IllegalStateException("mald about it");
     }
 }

@@ -1,5 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.ERecordComponentImpl;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -14,6 +15,7 @@ public interface ERecordComponent extends EAnnotated {
     String name();
     EMethod accessor();
     EType componentType();
+    ETypeUse componentTypeUse();
     EClass<?> rawComponentType();
     EClass<?> declaringRecord();
 

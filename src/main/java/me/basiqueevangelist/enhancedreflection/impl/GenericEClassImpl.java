@@ -1,13 +1,13 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
-import me.basiqueevangelist.enhancedreflection.api.EClass;
-import me.basiqueevangelist.enhancedreflection.api.EType;
-import me.basiqueevangelist.enhancedreflection.api.ETypeVariable;
-import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
+import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.GenericEClassUseImpl;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
-import java.util.Set;
 
 public class GenericEClassImpl<T> extends EClassImpl<T> {
     private List<EType> typeParamValues;
@@ -22,8 +22,8 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
         this.typeParamValues = null;
     }
 
-    public void setTypeParamValues(List<EType> typeParamValues) {
-        if (this.typeParamValues != null) throw new IllegalStateException("Type param values have already been set!");
+    public void init(List<EType> typeParamValues) {
+        if (this.typeParamValues != null) throw new IllegalStateException("Tried to initialize twice!");
 
         this.typeParamValues = typeParamValues;
     }
@@ -53,8 +53,8 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
-        if (!encounteredTypes.add(this))
+    public EType tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes) {
+        if (!encounteredTypes.addType(this))
             return this;
 
         EType[] newParamValues = new EType[typeParamValues.size()];
@@ -73,13 +73,18 @@ public class GenericEClassImpl<T> extends EClassImpl<T> {
             else
                 return this;
         } finally {
-            encounteredTypes.remove(this);
+            encounteredTypes.removeType(this);
         }
     }
 
     @Override
     public EClass<T[]> arrayOf() {
         return new GenericArrayEClassImpl<>(this);
+    }
+
+    @Override
+    public EClassUse<T> asUseWith(AnnotatedType data) {
+        return new GenericEClassUseImpl<>(data, this);
     }
 
     @Override

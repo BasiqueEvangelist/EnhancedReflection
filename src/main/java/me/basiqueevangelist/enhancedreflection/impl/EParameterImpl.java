@@ -1,6 +1,7 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 
 import java.lang.reflect.Parameter;
 import java.util.HashSet;
@@ -8,11 +9,13 @@ import java.util.Objects;
 
 public class EParameterImpl extends EAnnotatedImpl<Parameter> implements EParameter {
     private final EExecutable parent;
+    private final Lazy<ETypeUse> parameterTypeUse;
 
     public EParameterImpl(EExecutable parent, Parameter raw) {
         super(raw);
 
         this.parent = parent;
+        this.parameterTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedType()).tryResolve(parent, EncounteredTypes.create()));
     }
 
     @Override
@@ -27,7 +30,12 @@ public class EParameterImpl extends EAnnotatedImpl<Parameter> implements EParame
 
     @Override
     public EType parameterType() {
-        return EType.fromJava(raw.getParameterizedType()).tryResolve(parent, new HashSet<>());
+        return parameterTypeUse.get().type();
+    }
+
+    @Override
+    public ETypeUse parameterTypeUse() {
+        return parameterTypeUse.get();
     }
 
     @Override

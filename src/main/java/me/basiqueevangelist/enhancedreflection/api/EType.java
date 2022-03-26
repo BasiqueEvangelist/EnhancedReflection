@@ -1,11 +1,10 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.*;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.*;
-import java.util.List;
-import java.util.Set;
 
 @ApiStatus.NonExtendable
 public interface EType {
@@ -13,7 +12,7 @@ public interface EType {
         return TypeConverter.fromJava(type);
     }
 
-    EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes);
+    EType tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes);
     EType arrayOf();
 
     default EClass<?> upperBound() {
@@ -23,4 +22,6 @@ public interface EType {
     default EClass<?> lowerBound() {
         return CommonTypes.OBJECT;
     }
+
+    ETypeUse asEmptyUse();
 }

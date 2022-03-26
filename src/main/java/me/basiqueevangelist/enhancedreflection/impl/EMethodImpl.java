@@ -1,14 +1,19 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
 public class EMethodImpl extends EExecutableImpl<Method> implements EMethod {
+    private final Lazy<ETypeUse> returnTypeUse;
+
     public EMethodImpl(EClass<?> parent, Method method) {
         super(parent, method);
+
+        this.returnTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedReturnType()).tryResolve(parent, EncounteredTypes.create()));
     }
 
     @Override
@@ -18,7 +23,12 @@ public class EMethodImpl extends EExecutableImpl<Method> implements EMethod {
 
     @Override
     public EType returnType() {
-        return EType.fromJava(raw.getGenericReturnType()).tryResolve(parent, new HashSet<>());
+        return returnTypeUse.get().type();
+    }
+
+    @Override
+    public ETypeUse returnTypeUse() {
+        return returnTypeUse.get();
     }
 
     @Override

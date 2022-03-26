@@ -1,6 +1,7 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.Executable;
@@ -14,6 +15,7 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
     private final Lazy<List<EClass<?>>> exceptionTypes;
     private final Lazy<List<EParameter>> parameters;
     private final Lazy<List<ETypeVariable>> typeParams;
+    private final Lazy<ETypeUse> receiverTypeUse;
 
     public EExecutableImpl(EClass<?> parent, T raw) {
         super(raw);
@@ -50,6 +52,8 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
             }
             return List.of(eTypeParams);
         });
+
+        this.receiverTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedReceiverType()).tryResolve(parent, EncounteredTypes.create()));
     }
 
     @Override
@@ -85,6 +89,11 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
     @Override
     public @Unmodifiable List<ETypeVariable> typeVariables() {
         return typeParams.get();
+    }
+
+    @Override
+    public ETypeUse receiverTypeUse() {
+        return receiverTypeUse.get();
     }
 
     @Override

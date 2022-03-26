@@ -1,6 +1,7 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 
 import java.lang.reflect.RecordComponent;
 import java.util.HashSet;
@@ -8,12 +9,14 @@ import java.util.HashSet;
 public class ERecordComponentImpl extends EAnnotatedImpl<RecordComponent> implements ERecordComponent {
     private final EClass<?> parent;
     private final Lazy<EMethod> accessor;
+    private final Lazy<ETypeUse> componentTypeUse;
 
     public ERecordComponentImpl(EClass<?> parent, RecordComponent raw) {
         super(raw);
 
         this.parent = parent;
         this.accessor = new Lazy<>(() -> new EMethodImpl(parent, raw.getAccessor()));
+        this.componentTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedType()).tryResolve(parent, EncounteredTypes.create()));
     }
 
     @Override
@@ -28,7 +31,12 @@ public class ERecordComponentImpl extends EAnnotatedImpl<RecordComponent> implem
 
     @Override
     public EType componentType() {
-        return EType.fromJava(raw.getGenericType()).tryResolve(parent, new HashSet<>());
+        return componentTypeUse.get().type();
+    }
+
+    @Override
+    public ETypeUse componentTypeUse() {
+        return componentTypeUse.get();
     }
 
     @Override

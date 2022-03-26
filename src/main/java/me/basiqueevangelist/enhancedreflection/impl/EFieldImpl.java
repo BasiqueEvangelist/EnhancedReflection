@@ -1,19 +1,22 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.Objects;
 
 public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
     private final EClassImpl<?> parent;
+    private final Lazy<ETypeUse> fieldTypeUse;
 
     public EFieldImpl(EClassImpl<?> parent,
                       Field raw) {
         super(raw);
 
         this.parent = parent;
+
+        this.fieldTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedType()).tryResolve(parent, EncounteredTypes.create()));
     }
 
     @Override
@@ -33,7 +36,12 @@ public final class EFieldImpl extends EAnnotatedImpl<Field> implements EField {
 
     @Override
     public EType fieldType() {
-        return EType.fromJava(raw.getGenericType()).tryResolve(parent, new HashSet<>());
+        return fieldTypeUse.get().type();
+    }
+
+    @Override
+    public ETypeUse fieldTypeUse() {
+        return fieldTypeUse.get();
     }
 
     @Override

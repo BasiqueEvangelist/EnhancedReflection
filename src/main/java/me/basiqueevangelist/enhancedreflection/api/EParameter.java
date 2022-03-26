@@ -1,5 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.EParameterImpl;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -14,6 +15,7 @@ public interface EParameter extends EAnnotated {
     String name();
     EClass<?> rawParameterType();
     EType parameterType();
+    ETypeUse parameterTypeUse();
     boolean isVarArgs();
     EExecutable declaringExecutable();
 

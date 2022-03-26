@@ -3,8 +3,8 @@ package me.basiqueevangelist.enhancedreflection.impl;
 import java.util.function.Supplier;
 
 public class Lazy<T> implements Supplier<T> {
-    private volatile T value;
-    private final Supplier<T> factory;
+    private T value;
+    private volatile Supplier<T> factory;
 
     public Lazy(Supplier<T> factory) {
         this.factory = factory;
@@ -12,10 +12,11 @@ public class Lazy<T> implements Supplier<T> {
 
     @Override
     public T get() {
-        if (value == null)
+        if (factory != null)
             synchronized (this) {
-                if (value != null) return value;
+                if (factory == null) return value;
                 value = factory.get();
+                factory = null;
             }
 
         return value;

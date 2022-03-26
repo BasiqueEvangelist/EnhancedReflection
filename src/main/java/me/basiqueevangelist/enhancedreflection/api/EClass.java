@@ -1,5 +1,7 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.EClassImpl;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -21,7 +23,9 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     ClassScope scope();
     @Nullable ClassContainer enclosedIn();
     @Nullable EClass<? super T> superclass();
+    @Nullable EClassUse<? super T> superclassUse();
     @Unmodifiable List<EClass<? super T>> interfaces();
+    @Unmodifiable List<EClassUse<? super T>> interfaceUses();
     boolean isInstance(Object obj);
     boolean isAssignableFrom(EClass<?> klass);
     boolean isAssignableFrom(Class<?> klass);
@@ -44,10 +48,13 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     @Unmodifiable List<EMethod> methods();
     @Unmodifiable List<EMethod> declaredMethods();
     @Nullable EMethod method(String name, Class<?>... parameterTypes);
+    @Nullable EMethod method(String name, List<EClass<?>> parameterTypes);
     @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes);
+    @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes);
 
     @Unmodifiable List<EConstructor<T>> constructors();
     @Nullable EConstructor<T> constructor(Class<?>... parameterTypes);
+    @Nullable EConstructor<T> constructor(List<EClass<?>> parameterTypes);
 
     @Unmodifiable List<ERecordComponent> recordComponents();
 
@@ -84,4 +91,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     default EClass<?> lowerBound() {
         return this;
     }
+
+    @Override
+    EClassUse<T> asEmptyUse();
 }

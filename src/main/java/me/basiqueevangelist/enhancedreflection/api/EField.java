@@ -1,5 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.EClassImpl;
 import me.basiqueevangelist.enhancedreflection.impl.EFieldImpl;
 import org.jetbrains.annotations.ApiStatus;
@@ -13,6 +14,7 @@ public interface EField extends EMember {
     }
 
     EType fieldType();
+    ETypeUse fieldTypeUse();
     EClass<?> rawFieldType();
     Object get(Object receiver) throws IllegalAccessException;
     void set(Object receiver, Object to) throws IllegalAccessException;

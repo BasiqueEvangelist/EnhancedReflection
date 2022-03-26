@@ -1,5 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.api;
 
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.EMethodImpl;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -14,6 +15,7 @@ public interface EMethod extends EExecutable {
 
     Object invoke(Object receiver, Object... args) throws InvocationTargetException, IllegalAccessException;
     EType returnType();
+    ETypeUse returnTypeUse();
     EClass<?> rawReturnType();
 
     Method raw();

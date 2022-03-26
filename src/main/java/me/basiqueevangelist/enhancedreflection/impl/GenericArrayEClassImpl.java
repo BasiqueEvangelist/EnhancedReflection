@@ -1,16 +1,21 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EBoundArrayUse;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.EmptyAnnotatedType;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.GenericArrayEClassUseImpl;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class GenericArrayEClassImpl<T> implements EClass<T[]> {
+public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<EBoundArrayUse<T>> {
     private final EClass<T> elementType;
 
     public GenericArrayEClassImpl(EClass<T> elementType) {
@@ -75,7 +80,17 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
+    public @Nullable EClassUse<? super T[]> superclassUse() {
+        return superclass().asEmptyUse();
+    }
+
+    @Override
     public @Unmodifiable List<EClass<? super T[]>> interfaces() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @Unmodifiable List<EClassUse<? super T[]>> interfaceUses() {
         return Collections.emptyList();
     }
 
@@ -179,7 +194,17 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
+    public @Nullable EMethod method(String name, List<EClass<?>> parameterTypes) {
+        return CommonTypes.OBJECT.method(name, parameterTypes);
+    }
+
+    @Override
     public @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes) {
+        return null;
+    }
+
+    @Override
+    public @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
         return null;
     }
 
@@ -190,6 +215,11 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
 
     @Override
     public @Nullable EConstructor<T[]> constructor(Class<?>... parameterTypes) {
+        return null;
+    }
+
+    @Override
+    public @Nullable EConstructor<T[]> constructor(List<EClass<?>> parameterTypes) {
         return null;
     }
 
@@ -235,7 +265,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
 
     @Override
     public Set<EClass<? super T[]>> allSuperclasses() {
-        return Collections.emptySet();
+        return Collections.singleton(EClass.fromJava(Object.class));
     }
 
     @Override
@@ -254,6 +284,16 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
+    public EBoundArrayUse<T> asUseWith(AnnotatedType data) {
+        return new GenericArrayEClassUseImpl<>(data, this);
+    }
+
+    @Override
+    public EClassUse<T[]> asEmptyUse() {
+        return asUseWith(EmptyAnnotatedType.INSTANCE);
+    }
+
+    @Override
     public int modifiers() {
         return 1041;
     }
@@ -269,7 +309,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]> {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
+    public EType tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes) {
         EType newType = elementType.tryResolve(ctx, encounteredTypes);
         if (newType != elementType) {
             return new GenericArrayEClassImpl<>((EClass<?>) newType);

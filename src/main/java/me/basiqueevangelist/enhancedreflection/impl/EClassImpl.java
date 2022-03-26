@@ -1,13 +1,24 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.EClassUseImpl;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.EmptyAnnotatedType;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.*;
 import java.util.*;
 
-public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T> {
+public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>, ETypeInternal<EClassUse<T>> {
+    private static final ClassValue<EClassImpl<?>> CLASS_TO_ECLASS = new ClassValue<>() {
+        @Override
+        protected EClassImpl<?> computeValue(Class<?> type) {
+            return new EClassImpl<>(type);
+        }
+    };
+
     private final Lazy<List<ETypeVariable>> typeParams;
     private final Lazy<List<EField>> fields;
     private final Lazy<Map<String, EField>> fieldsMap;
@@ -15,20 +26,17 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     private final Lazy<List<EMethod>> methods;
     private final Lazy<List<EMethod>> declaredMethods;
     private final Lazy<List<EConstructor<T>>> constructors;
-    private final Lazy<List<EClass<? super T>>> interfaces;
+    private final Lazy<List<EClassUse<? super T>>> interfaces;
     private final Lazy<List<ERecordComponent>> recordComponents;
     private final Lazy<List<T>> enumConstants;
+    private final Lazy<EClassUse<? super T>> superclass;
 
     @SuppressWarnings("unchecked")
     public static <T> EClassImpl<T> fromJava(Class<T> klass) {
         if (klass == null)
             return null;
 
-        var clazz = TypeStore.TYPES.get(klass);
-
-        if (clazz == null) clazz = new EClassImpl<>(klass);
-
-        return (EClassImpl<T>) clazz;
+        return (EClassImpl<T>) CLASS_TO_ECLASS.get(klass);
     }
 
     @SuppressWarnings("unchecked")
@@ -51,7 +59,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
             allFields.removeIf(x -> !x.isPublic());
 
             if (superclass != null)
-                superclass().fields().forEach(x -> {
+                superclass.fields().forEach(x -> {
                     for (EField allField : allFields) {
                         if (allField.raw() == x.raw())
                             return;
@@ -132,11 +140,11 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
         });
 
         this.interfaces = new Lazy<>(() -> {
-            Type[] jInterfaces = raw.getGenericInterfaces();
-            EClass<? super T>[] interfaces = new EClass[jInterfaces.length];
+            AnnotatedType[] jInterfaces = raw.getAnnotatedInterfaces();
+            EClassUse<? super T>[] interfaces = new EClassUse[jInterfaces.length];
 
             for (int i = 0; i < interfaces.length; i++) {
-                interfaces[i] = (EClass<? super T>) EType.fromJava(jInterfaces[i]).tryResolve(this, new HashSet<>()).upperBound();
+                interfaces[i] = (EClassUse<? super T>) ETypeUse.fromJava(jInterfaces[i]).tryResolve(this, EncounteredTypes.create());
             }
 
             return List.of(interfaces);
@@ -158,6 +166,13 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
 
             if (arr == null) return null;
             else return List.of(arr);
+        });
+
+        this.superclass = new Lazy<>(() -> {
+            var superclass = raw.getAnnotatedSuperclass();
+
+            if (superclass == null) return null;
+            return (EClassUse<? super T>) ETypeUse.fromJava(superclass).tryResolve(this, EncounteredTypes.create());
         });
     }
 
@@ -214,15 +229,24 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public @Nullable EClass<? super T> superclass() {
-        var superclass = raw.getGenericSuperclass();
-        if (superclass == null) return null;
-        return (EClass<? super T>) EType.fromJava(superclass).tryResolve(this, new HashSet<>()).upperBound();
+        EClassUse<? super T> use = superclass.get();
+        if (use == null) return null;
+        else return use.type();
+    }
+
+    @Override
+    public @Nullable EClassUse<? super T> superclassUse() {
+        return superclass.get();
     }
 
     @Override
     public @Unmodifiable List<EClass<? super T>> interfaces() {
+        return new MappedImmutableList<>(interfaces.get(), EClassUse::type);
+    }
+
+    @Override
+    public @Unmodifiable List<EClassUse<? super T>> interfaceUses() {
         return interfaces.get();
     }
 
@@ -336,28 +360,38 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
 
     @Override
     public @Nullable EMethod method(String name, Class<?>... parameterTypes) {
-        return findMethod(methods(), name, parameterTypes);
+        return findExecutable(methods(), name, List.of(parameterTypes));
+    }
+
+    @Override
+    public @Nullable EMethod method(String name, List<EClass<?>> parameterTypes) {
+        return findExecutable(methods(), name, new MappedImmutableList<>(parameterTypes, EClass::raw));
     }
 
     @Override
     public @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes) {
-        return findMethod(declaredMethods(), name, parameterTypes);
+        return findExecutable(declaredMethods(), name, List.of(parameterTypes));
     }
 
-    private EMethod findMethod(List<EMethod> methods, String name, Class<?>[] parameterTypes) {
-        EMethod result = null;
+    @Override
+    public @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
+        return findExecutable(declaredMethods(), name, new MappedImmutableList<>(parameterTypes, EClass::raw));
+    }
 
-        outer: for (EMethod method : methods) {
-            if (!method.name().equals(name)) continue;
-            if (method.parameters().size() != parameterTypes.length) continue;
+    private <E extends EExecutable> E findExecutable(List<E> executables, @Nullable String name, List<Class<?>> parameterTypes) {
+        E result = null;
 
-            for (int i = 0; i < parameterTypes.length; i++) {
-                if (!parameterTypes[i].isAssignableFrom(method.parameters().get(i).rawParameterType().raw()))
+        outer: for (E method : executables) {
+            if (name != null && !method.name().equals(name)) continue;
+            if (method.parameters().size() != parameterTypes.size()) continue;
+
+            for (int i = 0; i < parameterTypes.size(); i++) {
+                if (!parameterTypes.get(i).isAssignableFrom(method.parameters().get(i).rawParameterType().raw()))
                     continue outer;
             }
 
             if (result != null) {
-                for (int i = 0; i < parameterTypes.length; i++) {
+                for (int i = 0; i < parameterTypes.size(); i++) {
                     if (!result.parameters().get(i).rawParameterType().isAssignableFrom(method.parameters().get(i).rawParameterType()))
                         continue outer;
                 }
@@ -376,13 +410,12 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
 
     @Override
     public @Nullable EConstructor<T> constructor(Class<?>... parameterTypes) {
-        try {
-            return new EConstructorImpl<>(this, raw.getConstructor(parameterTypes));
-        } catch (NoSuchMethodException unused) {
-            return null;
-        } catch (SecurityException se) {
-            throw new RuntimeException(se);
-        }
+        return findExecutable(constructors(), null, List.of(parameterTypes));
+    }
+
+    @Override
+    public @Nullable EConstructor<T> constructor(List<EClass<?>> parameterTypes) {
+        return findExecutable(constructors(), null, new MappedImmutableList<>(parameterTypes, EClass::raw));
     }
 
     @Override
@@ -458,6 +491,16 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
         return raw.getClassLoader();
     }
 
+    @Override
+    public EClassUse<T> asEmptyUse() {
+        return asUseWith(EmptyAnnotatedType.INSTANCE);
+    }
+
+    @Override
+    public EClassUse<T> asUseWith(AnnotatedType data) {
+        return new EClassUseImpl<>(data, this);
+    }
+
     private void addInterfaces(Set<EClass<?>> interfaces) {
         for (EClass<?> iface : interfaces()) {
             if (interfaces.add(iface))
@@ -468,6 +511,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     @Override
     public String toString() {
         if (type() == ClassType.ARRAY)
+            //noinspection ConstantConditions
             return arrayComponent().toString() + "[]";
         else
             return raw.getName();
@@ -489,8 +533,8 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
-        if (!encounteredTypes.add(this))
+    public EType tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes) {
+        if (!encounteredTypes.addType(this))
             return this;
 
         List<ETypeVariable> typeParams = typeVariables();
@@ -510,7 +554,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
             else
                 return this;
         } finally {
-            encounteredTypes.remove(this);
+            encounteredTypes.removeType(this);
         }
     }
 }

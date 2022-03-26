@@ -1,12 +1,15 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
+import me.basiqueevangelist.enhancedreflection.api.typeuse.EWildcardUse;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.EWildcardUseImpl;
+import me.basiqueevangelist.enhancedreflection.impl.typeuse.EmptyAnnotatedType;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
-import java.util.Set;
 
-public class EWildcardImpl implements EWildcard {
+public class EWildcardImpl implements EWildcard, ETypeInternal<EWildcardUse> {
     private List<EType> lowerBounds;
     private List<EType> upperBounds;
 
@@ -20,15 +23,10 @@ public class EWildcardImpl implements EWildcard {
         this.upperBounds = null;
     }
 
-    public void setLowerBounds(List<EType> lowerBounds) {
-        if (this.lowerBounds != null) throw new IllegalStateException("Lower bounds have already been set!");
+    public void init(List<EType> lowerBounds, List<EType> upperBounds) {
+        if (this.lowerBounds != null) throw new IllegalStateException("Tried to initialize twice!");
 
         this.lowerBounds = lowerBounds;
-    }
-
-    public void setUpperBounds(List<EType> upperBounds) {
-        if (this.upperBounds != null) throw new IllegalStateException("Upper bounds have already been set!");
-
         this.upperBounds = upperBounds;
     }
 
@@ -45,6 +43,16 @@ public class EWildcardImpl implements EWildcard {
     @Override
     public EUnboundArray arrayOf() {
         return new EUnboundArrayImpl(this);
+    }
+
+    @Override
+    public EWildcardUse asUseWith(AnnotatedType data) {
+        return new EWildcardUseImpl(data, this);
+    }
+
+    @Override
+    public EWildcardUse asEmptyUse() {
+        return asUseWith(EmptyAnnotatedType.INSTANCE);
     }
 
     @Override
@@ -75,8 +83,8 @@ public class EWildcardImpl implements EWildcard {
     }
 
     @Override
-    public EType tryResolve(GenericTypeContext ctx, Set<EType> encounteredTypes) {
-        if (!encounteredTypes.add(this))
+    public EType tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes) {
+        if (!encounteredTypes.addType(this))
             return this;
 
         EType[] upperBounds = new EType[upperBounds().size()];
@@ -105,7 +113,7 @@ public class EWildcardImpl implements EWildcard {
             else
                 return this;
         } finally {
-            encounteredTypes.remove(this);
+            encounteredTypes.removeType(this);
         }
     }
 
