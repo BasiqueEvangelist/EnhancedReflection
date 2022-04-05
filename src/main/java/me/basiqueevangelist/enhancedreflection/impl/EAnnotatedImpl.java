@@ -26,7 +26,7 @@ public abstract class EAnnotatedImpl<T extends AnnotatedElement> implements EAnn
     }
 
     @Override
-    public <A extends Annotation> @Nullable A annotation(Class<A> type) {
+    public <A extends Annotation> A annotation(Class<A> type) {
         return raw.getAnnotation(type);
     }
 
@@ -36,7 +36,7 @@ public abstract class EAnnotatedImpl<T extends AnnotatedElement> implements EAnn
     }
 
     @Override
-    public <A extends Annotation> @Nullable A declaredAnnotation(Class<A> type) {
+    public <A extends Annotation> A declaredAnnotation(Class<A> type) {
         return raw.getDeclaredAnnotation(type);
     }
 

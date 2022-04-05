@@ -11,10 +11,10 @@ import java.util.List;
 public interface EAnnotated {
     boolean hasAnnotation(Class<? extends Annotation> type);
 
-    <A extends Annotation> @Nullable A annotation(Class<A> type);
+    <A extends Annotation> A annotation(Class<A> type);
     <A extends Annotation> A[] annotations(Class<A> type);
 
-    <A extends Annotation> @Nullable A declaredAnnotation(Class<A> type);
+    <A extends Annotation> A declaredAnnotation(Class<A> type);
     <A extends Annotation> A[] declaredAnnotations(Class<A> type);
 
     @Unmodifiable List<Annotation> allAnnotations();

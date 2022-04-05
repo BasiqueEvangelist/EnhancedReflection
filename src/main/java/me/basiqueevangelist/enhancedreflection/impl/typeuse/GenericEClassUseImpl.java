@@ -56,7 +56,7 @@ public class GenericEClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> imple
     }
 
     @Override
-    public @Nullable EClassUse<?> arrayComponent() {
+    public EClassUse<?> arrayComponent() {
         return null;
     }
 

@@ -24,7 +24,7 @@ public interface EExecutable extends EMember, GenericTypeContext, ClassContainer
     boolean isVarArgs();
     @Unmodifiable List<EClass<?>> exceptionTypes();
     @Unmodifiable List<EParameter> parameters();
-    @Nullable ETypeUse receiverTypeUse();
+    ETypeUse receiverTypeUse();
 
     Executable raw();
 }

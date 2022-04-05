@@ -209,7 +209,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable ClassContainer enclosedIn() {
+    public ClassContainer enclosedIn() {
         Class<?> enclosingClass = raw.getEnclosingClass();
 
         if (enclosingClass != null)
@@ -229,14 +229,14 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable EClass<? super T> superclass() {
+    public EClass<? super T> superclass() {
         EClassUse<? super T> use = superclass.get();
         if (use == null) return null;
         else return use.type();
     }
 
     @Override
-    public @Nullable EClassUse<? super T> superclassUse() {
+    public EClassUse<? super T> superclassUse() {
         return superclass.get();
     }
 
@@ -276,7 +276,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable EPackage getPackage() {
+    public EPackage getPackage() {
         return EPackage.fromJava(raw.getPackage());
     }
 
@@ -339,12 +339,12 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable EField field(String name) {
+    public EField field(String name) {
         return fieldsMap.get().get(name);
     }
 
     @Override
-    public @Nullable EField declaredField(String name) {
+    public EField declaredField(String name) {
         return declaredFieldsMap.get().get(name);
     }
 
@@ -359,26 +359,26 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable EMethod method(String name, Class<?>... parameterTypes) {
+    public EMethod method(String name, Class<?>... parameterTypes) {
         return findExecutable(methods(), name, List.of(parameterTypes));
     }
 
     @Override
-    public @Nullable EMethod method(String name, List<EClass<?>> parameterTypes) {
+    public EMethod method(String name, List<EClass<?>> parameterTypes) {
         return findExecutable(methods(), name, new MappedImmutableList<>(parameterTypes, EClass::raw));
     }
 
     @Override
-    public @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes) {
+    public EMethod declaredMethod(String name, Class<?>... parameterTypes) {
         return findExecutable(declaredMethods(), name, List.of(parameterTypes));
     }
 
     @Override
-    public @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
+    public EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
         return findExecutable(declaredMethods(), name, new MappedImmutableList<>(parameterTypes, EClass::raw));
     }
 
-    private <E extends EExecutable> E findExecutable(List<E> executables, @Nullable String name, List<Class<?>> parameterTypes) {
+    private <E extends EExecutable> E findExecutable(List<E> executables, String name, List<Class<?>> parameterTypes) {
         E result = null;
 
         outer: for (E method : executables) {
@@ -409,12 +409,12 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable EConstructor<T> constructor(Class<?>... parameterTypes) {
+    public EConstructor<T> constructor(Class<?>... parameterTypes) {
         return findExecutable(constructors(), null, List.of(parameterTypes));
     }
 
     @Override
-    public @Nullable EConstructor<T> constructor(List<EClass<?>> parameterTypes) {
+    public EConstructor<T> constructor(List<EClass<?>> parameterTypes) {
         return findExecutable(constructors(), null, new MappedImmutableList<>(parameterTypes, EClass::raw));
     }
 
@@ -482,7 +482,7 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
     }
 
     @Override
-    public @Nullable @Unmodifiable List<T> enumConstants() {
+    public @Unmodifiable List<T> enumConstants() {
         return enumConstants.get();
     }
 

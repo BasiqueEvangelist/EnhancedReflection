@@ -98,7 +98,7 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
     }
 
     @Override
-    public @Nullable ETypeUse receiverTypeUse() {
+    public ETypeUse receiverTypeUse() {
         return receiverTypeUse.get();
     }
 

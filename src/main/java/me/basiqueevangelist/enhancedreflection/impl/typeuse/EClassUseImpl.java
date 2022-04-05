@@ -29,7 +29,7 @@ public class EClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> implements E
     }
 
     @Override
-    public @Nullable EClassUse<?> arrayComponent() {
+    public EClassUse<?> arrayComponent() {
         return null;
     }
 

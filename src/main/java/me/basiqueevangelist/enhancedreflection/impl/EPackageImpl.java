@@ -14,32 +14,32 @@ public class EPackageImpl extends EAnnotatedImpl<Package> implements EPackage {
     }
 
     @Override
-    public @Nullable String specTitle() {
+    public String specTitle() {
         return raw.getSpecificationTitle();
     }
 
     @Override
-    public @Nullable String specVendor() {
+    public String specVendor() {
         return raw.getSpecificationVendor();
     }
 
     @Override
-    public @Nullable String specVersion() {
+    public String specVersion() {
         return raw.getSpecificationVersion();
     }
 
     @Override
-    public @Nullable String implTitle() {
+    public String implTitle() {
         return raw.getImplementationTitle();
     }
 
     @Override
-    public @Nullable String implVendor() {
+    public String implVendor() {
         return raw.getImplementationVendor();
     }
 
     @Override
-    public @Nullable String implVersion() {
+    public String implVersion() {
         return raw.getImplementationVersion();
     }
 

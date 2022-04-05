@@ -21,9 +21,9 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
 
     ClassType type();
     ClassScope scope();
-    @Nullable ClassContainer enclosedIn();
-    @Nullable EClass<? super T> superclass();
-    @Nullable EClassUse<? super T> superclassUse();
+    ClassContainer enclosedIn();
+    EClass<? super T> superclass();
+    EClassUse<? super T> superclassUse();
     @Unmodifiable List<EClass<? super T>> interfaces();
     @Unmodifiable List<EClassUse<? super T>> interfaceUses();
     boolean isInstance(Object obj);
@@ -31,7 +31,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     boolean isAssignableFrom(Class<?> klass);
     String name();
     String simpleName();
-    @Nullable EPackage getPackage();
+    EPackage getPackage();
     String packageName();
 
     boolean isGeneric();
@@ -42,26 +42,26 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
 
     @Unmodifiable Collection<EField> fields();
     @Unmodifiable Collection<EField> declaredFields();
-    @Nullable EField field(String name);
-    @Nullable EField declaredField(String name);
+    EField field(String name);
+    EField declaredField(String name);
 
     @Unmodifiable List<EMethod> methods();
     @Unmodifiable List<EMethod> declaredMethods();
-    @Nullable EMethod method(String name, Class<?>... parameterTypes);
-    @Nullable EMethod method(String name, List<EClass<?>> parameterTypes);
-    @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes);
-    @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes);
+    EMethod method(String name, Class<?>... parameterTypes);
+    EMethod method(String name, List<EClass<?>> parameterTypes);
+    EMethod declaredMethod(String name, Class<?>... parameterTypes);
+    EMethod declaredMethod(String name, List<EClass<?>> parameterTypes);
 
     @Unmodifiable List<EConstructor<T>> constructors();
-    @Nullable EConstructor<T> constructor(Class<?>... parameterTypes);
-    @Nullable EConstructor<T> constructor(List<EClass<?>> parameterTypes);
+    EConstructor<T> constructor(Class<?>... parameterTypes);
+    EConstructor<T> constructor(List<EClass<?>> parameterTypes);
 
     @Unmodifiable List<ERecordComponent> recordComponents();
 
     <O> EClass<? extends O> assertSubclass(EClass<O> clazz);
 
     EClass<T[]> arrayOf();
-    @Nullable EClass<?> arrayComponent();
+    EClass<?> arrayComponent();
 
     Class<T> raw();
 
@@ -71,7 +71,7 @@ public interface EClass<T> extends EType, ModifierHolder, GenericTypeContext, EA
     Set<EClass<? super T>> allSuperclasses();
     Set<EClass<? super T>> allInterfaces();
 
-    @Nullable @Unmodifiable List<T> enumConstants();
+    @Unmodifiable List<T> enumConstants();
 
     ClassLoader classLoader();
 

@@ -15,13 +15,13 @@ public interface EPackage extends EAnnotated {
 
     String name();
 
-    @Nullable String specTitle();
-    @Nullable String specVendor();
-    @Nullable String specVersion();
+    String specTitle();
+    String specVendor();
+    String specVersion();
 
-    @Nullable String implTitle();
-    @Nullable String implVendor();
-    @Nullable String implVersion();
+    String implTitle();
+    String implVendor();
+    String implVersion();
 
     Package raw();
 }

@@ -69,7 +69,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable ClassContainer enclosedIn() {
+    public ClassContainer enclosedIn() {
         return null;
     }
 
@@ -79,7 +79,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable EClassUse<? super T[]> superclassUse() {
+    public EClassUse<? super T[]> superclassUse() {
         return superclass().asEmptyUse();
     }
 
@@ -123,7 +123,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable EPackage getPackage() {
+    public EPackage getPackage() {
         return null;
     }
 
@@ -168,12 +168,12 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable EField field(String name) {
+    public EField field(String name) {
         return null;
     }
 
     @Override
-    public @Nullable EField declaredField(String name) {
+    public EField declaredField(String name) {
         return null;
     }
 
@@ -188,22 +188,22 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable EMethod method(String name, Class<?>... parameterTypes) {
+    public EMethod method(String name, Class<?>... parameterTypes) {
         return CommonTypes.OBJECT.method(name, parameterTypes);
     }
 
     @Override
-    public @Nullable EMethod method(String name, List<EClass<?>> parameterTypes) {
+    public EMethod method(String name, List<EClass<?>> parameterTypes) {
         return CommonTypes.OBJECT.method(name, parameterTypes);
     }
 
     @Override
-    public @Nullable EMethod declaredMethod(String name, Class<?>... parameterTypes) {
+    public EMethod declaredMethod(String name, Class<?>... parameterTypes) {
         return null;
     }
 
     @Override
-    public @Nullable EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
+    public EMethod declaredMethod(String name, List<EClass<?>> parameterTypes) {
         return null;
     }
 
@@ -213,12 +213,12 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable EConstructor<T[]> constructor(Class<?>... parameterTypes) {
+    public EConstructor<T[]> constructor(Class<?>... parameterTypes) {
         return null;
     }
 
     @Override
-    public @Nullable EConstructor<T[]> constructor(List<EClass<?>> parameterTypes) {
+    public EConstructor<T[]> constructor(List<EClass<?>> parameterTypes) {
         return null;
     }
 
@@ -273,7 +273,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<ECl
     }
 
     @Override
-    public @Nullable @Unmodifiable List<T[]> enumConstants() {
+    public @Unmodifiable List<T[]> enumConstants() {
         return null;
     }
 

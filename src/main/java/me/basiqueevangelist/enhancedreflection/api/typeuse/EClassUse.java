@@ -9,7 +9,7 @@ import java.util.List;
 public interface EClassUse<T> extends ETypeUse {
     @Unmodifiable List<ETypeUse> typeVariableValues();
 
-    @Nullable EClassUse<?> arrayComponent();
+    EClassUse<?> arrayComponent();
 
     @Override
     EClass<T> type();

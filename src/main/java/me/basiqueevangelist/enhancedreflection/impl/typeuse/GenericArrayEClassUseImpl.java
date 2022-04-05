@@ -23,7 +23,7 @@ public class GenericArrayEClassUseImpl<T> extends EClassUseImpl<T[]> {
     }
 
     @Override
-    public @Nullable EClassUse<?> arrayComponent() {
+    public EClassUse<?> arrayComponent() {
         return component;
     }
 }
