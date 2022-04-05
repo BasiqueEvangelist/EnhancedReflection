@@ -18,7 +18,7 @@ public class RecursiveTest {
     @Test
     public void recursiveResolve() {
         var klass = EClass.fromJava(RecursiveTest.class);
-        var method = klass.method("testMethod", Enum.class);
+        var method = klass.declaredMethod("testMethod", Enum.class);
         var paramClass = method.parameters().get(0).parameterType().upperBound();
 
         assertEquals(Enum.class, paramClass.raw());

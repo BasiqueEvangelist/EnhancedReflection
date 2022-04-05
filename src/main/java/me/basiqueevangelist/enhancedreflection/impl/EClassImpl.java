@@ -77,6 +77,8 @@ public class EClassImpl<T> extends EAnnotatedImpl<Class<T>> implements EClass<T>
                 allFields.add(x);
             }));
 
+            allFields.removeIf(x -> !x.isPublic());
+
             return Collections.unmodifiableList(allFields);
         });
 

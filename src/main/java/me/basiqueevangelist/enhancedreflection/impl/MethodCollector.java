@@ -12,6 +12,8 @@ public class MethodCollector {
     private final Map<Signature, EMethod> map = new HashMap<>();
 
     public void add(EMethod method) {
+        if (!method.isPublic()) return;
+
         Signature signature = new Signature(method);
         EMethod existing = map.get(signature);
 
