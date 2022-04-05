@@ -6,6 +6,7 @@ import me.basiqueevangelist.enhancedreflection.api.GenericTypeContext;
 import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
 import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.*;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.AnnotatedType;
@@ -25,6 +26,11 @@ public class EClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> implements E
     @Override
     public @Unmodifiable List<ETypeUse> typeVariableValues() {
         return typeVarValues;
+    }
+
+    @Override
+    public @Nullable EClassUse<?> arrayComponent() {
+        return null;
     }
 
     @Override
@@ -56,5 +62,10 @@ public class EClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> implements E
     @Override
     public EClass<T> type() {
         return klass;
+    }
+
+    @Override
+    public AnnotatedType raw() {
+        return raw;
     }
 }

@@ -2,6 +2,7 @@ package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
 import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.Executable;
@@ -53,7 +54,12 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
             return List.of(eTypeParams);
         });
 
-        this.receiverTypeUse = new Lazy<>(() -> ETypeUse.fromJava(raw.getAnnotatedReceiverType()).tryResolve(parent, EncounteredTypes.create()));
+        this.receiverTypeUse = new Lazy<>(() -> {
+            var jReceiver = raw.getAnnotatedReceiverType();
+
+            if (jReceiver == null) return null;
+            else return ETypeUse.fromJava(jReceiver).tryResolve(parent, EncounteredTypes.create());
+        });
     }
 
     @Override
@@ -92,7 +98,7 @@ public abstract class EExecutableImpl<T extends Executable> extends EAnnotatedIm
     }
 
     @Override
-    public ETypeUse receiverTypeUse() {
+    public @Nullable ETypeUse receiverTypeUse() {
         return receiverTypeUse.get();
     }
 

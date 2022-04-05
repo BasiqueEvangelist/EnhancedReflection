@@ -1,13 +1,13 @@
 package me.basiqueevangelist.enhancedreflection.impl.typeuse;
 
 import me.basiqueevangelist.enhancedreflection.api.EClass;
-import me.basiqueevangelist.enhancedreflection.api.typeuse.EBoundArrayUse;
 import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
 import me.basiqueevangelist.enhancedreflection.impl.GenericArrayEClassImpl;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.AnnotatedType;
 
-public class GenericArrayEClassUseImpl<T> extends EClassUseImpl<T[]> implements EBoundArrayUse<T> {
+public class GenericArrayEClassUseImpl<T> extends EClassUseImpl<T[]> {
     private final EClassUse<T> component;
 
     public GenericArrayEClassUseImpl(AnnotatedType raw, EClassUse<T> component) {
@@ -17,13 +17,13 @@ public class GenericArrayEClassUseImpl<T> extends EClassUseImpl<T[]> implements 
 
     @SuppressWarnings("unchecked")
     public GenericArrayEClassUseImpl(AnnotatedType raw, EClass<T[]> type) {
-        super(EmptyAnnotatedType.INSTANCE, type);
+        super(raw, type);
 
         this.component = (EClassUse<T>) type.arrayComponent().asEmptyUse();
     }
 
     @Override
-    public EClassUse<T> arrayComponent() {
+    public @Nullable EClassUse<?> arrayComponent() {
         return component;
     }
 }

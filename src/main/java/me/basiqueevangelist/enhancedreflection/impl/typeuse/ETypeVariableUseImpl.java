@@ -81,6 +81,11 @@ public class ETypeVariableUseImpl extends EAnnotatedImpl<AnnotatedType> implemen
 
     @Override
     public ETypeVariable type() {
-        return null;
+        return type;
+    }
+
+    @Override
+    public AnnotatedType raw() {
+        return raw;
     }
 }

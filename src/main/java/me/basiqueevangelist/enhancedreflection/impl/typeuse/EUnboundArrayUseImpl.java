@@ -41,4 +41,9 @@ public class EUnboundArrayUseImpl extends EAnnotatedImpl<AnnotatedType> implemen
     public EUnboundArray type() {
         return type;
     }
+
+    @Override
+    public AnnotatedType raw() {
+        return raw;
+    }
 }

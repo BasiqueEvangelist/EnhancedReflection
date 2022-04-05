@@ -9,6 +9,7 @@ import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import me.basiqueevangelist.enhancedreflection.impl.EAnnotatedImpl;
 import me.basiqueevangelist.enhancedreflection.impl.GenericEClassImpl;
 import me.basiqueevangelist.enhancedreflection.impl.MappedImmutableList;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.AnnotatedType;
@@ -55,6 +56,11 @@ public class GenericEClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> imple
     }
 
     @Override
+    public @Nullable EClassUse<?> arrayComponent() {
+        return null;
+    }
+
+    @Override
     public ETypeUse tryResolve(GenericTypeContext ctx, EncounteredTypes encounteredTypes) {
         if (!encounteredTypes.addTypeUse(this))
             return this;
@@ -82,5 +88,10 @@ public class GenericEClassUseImpl<T> extends EAnnotatedImpl<AnnotatedType> imple
     @Override
     public EClass<T> type() {
         return klass;
+    }
+
+    @Override
+    public AnnotatedType raw() {
+        return raw;
     }
 }

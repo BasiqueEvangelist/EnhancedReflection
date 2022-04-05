@@ -2,6 +2,7 @@ package me.basiqueevangelist.enhancedreflection.api;
 
 import me.basiqueevangelist.enhancedreflection.api.typeuse.ETypeUse;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.Constructor;
@@ -23,7 +24,7 @@ public interface EExecutable extends EMember, GenericTypeContext, ClassContainer
     boolean isVarArgs();
     @Unmodifiable List<EClass<?>> exceptionTypes();
     @Unmodifiable List<EParameter> parameters();
-    ETypeUse receiverTypeUse();
+    @Nullable ETypeUse receiverTypeUse();
 
     Executable raw();
 }

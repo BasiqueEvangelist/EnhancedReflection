@@ -29,7 +29,7 @@ public class TypeConverter {
         if (existingType != null) return existingType;
 
         if (type instanceof Class<?> klass) {
-            EClassImpl<?> impl = new EClassImpl<>(klass);
+            EClassImpl<?> impl = EClassImpl.fromJava(klass);
             seenTypes.put(type, impl);
             return impl;
         } else if (type instanceof ParameterizedType ptype) {

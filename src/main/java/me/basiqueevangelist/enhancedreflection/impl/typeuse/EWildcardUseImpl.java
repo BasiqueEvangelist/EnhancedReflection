@@ -99,4 +99,9 @@ public class EWildcardUseImpl extends EAnnotatedImpl<AnnotatedType> implements E
     public EWildcard type() {
         return type;
     }
+
+    @Override
+    public AnnotatedType raw() {
+        return raw;
+    }
 }

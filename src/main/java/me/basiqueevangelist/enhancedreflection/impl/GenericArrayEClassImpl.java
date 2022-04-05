@@ -1,7 +1,6 @@
 package me.basiqueevangelist.enhancedreflection.impl;
 
 import me.basiqueevangelist.enhancedreflection.api.*;
-import me.basiqueevangelist.enhancedreflection.api.typeuse.EBoundArrayUse;
 import me.basiqueevangelist.enhancedreflection.api.typeuse.EClassUse;
 import me.basiqueevangelist.enhancedreflection.impl.typeuse.EmptyAnnotatedType;
 import me.basiqueevangelist.enhancedreflection.impl.typeuse.GenericArrayEClassUseImpl;
@@ -15,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<EBoundArrayUse<T>> {
+public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<EClassUse<T[]>> {
     private final EClass<T> elementType;
 
     public GenericArrayEClassImpl(EClass<T> elementType) {
@@ -284,7 +283,7 @@ public class GenericArrayEClassImpl<T> implements EClass<T[]>, ETypeInternal<EBo
     }
 
     @Override
-    public EBoundArrayUse<T> asUseWith(AnnotatedType data) {
+    public EClassUse<T[]> asUseWith(AnnotatedType data) {
         return new GenericArrayEClassUseImpl<>(data, this);
     }
 
